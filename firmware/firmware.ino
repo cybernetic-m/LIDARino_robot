@@ -25,9 +25,9 @@ const int MOTOR_L_F = 11;
 // ENCODERS VARIABLES
 int steps = 20; // Write your steps based on the encoder wheel (number of white/black spaces)
 int deltaTime = 1000; // Write here the interval of update of the rpm and velocities (ms)
+float wheelRadius = 0.063;  // Write here your wheel radius  (our wheel is 6.3 cm => 0.063 m)
 volatile float currentTime = 0; // In the loop measure the current time to compare with lastTime 
 volatile float lastTime = 0; // The previous currentTime on previous loop
-
 
 // Definition of variables for the LEFT wheel encoder
 //int anglePerPulse_L = 360 / (steps*2); // The encoder has 20 pulses per revolution, we used steps*2 because we are counting +1 each change (both rising or falling)
@@ -35,8 +35,8 @@ volatile unsigned long totalPulses_L = 0; // Total number of pulses
 volatile float interruptCurrentTime_L = 0; // Current time of the Right Interrupt
 volatile float interruptLastTime_L = 0; // Time of the precedent interrupt
 volatile float interruptBetweenTime_L = 0; // Time difference between two readings
-//volatile long totalAngle_L = 0; // Total angle in degrees
-float rps_L=0; // Angular velocity in degrees per second
+float rps_L=0; // Round Per Seconds of the left wheel
+float v_L=0; // Linear Velocity of the contact point of the left wheel
 
 // Definition of variables for the RIGTH wheel encoder
 //int anglePerPulse_R = 360 / (steps*2); // The encoder has 20 pulses per revolution, we used steps*2 because we are counting +1 each change (both rising or falling)
@@ -44,10 +44,8 @@ volatile unsigned long totalPulses_R = 0; // Total number of pulses
 volatile float interruptCurrentTime_R = 0; // Current time of the Right Interrupt
 volatile float interruptLastTime_R = 0; // Time of the precedent interrupt
 volatile float interruptBetweenTime_R = 0; // Time difference between two readings
-//volatile long totalAngle_R = 0; // Total angle in degrees
-float rps_R=0; // Angular velocity in degrees per second
-
-
+float rps_R=0; // Round Per Seconds of the right wheel
+float v_R=0; // Linear Velocity of the contact point of the right wheel
 
 // ULTRASOUND VARIABLES
 // Definition of the centimeters for ultrasound sensor
@@ -86,14 +84,19 @@ cm = ultrasound_read(ECHO);
 
 currentTime = millis(); // measure the actual time
 
+
 if (currentTime - lastTime >= deltaTime) {
   rps_L = (float)totalPulses_L / ((steps*2) * (deltaTime/1000.0)) ;
   rps_R = (float)totalPulses_R / ((steps*2) * (deltaTime/1000.0));
+
+  v_L = (2*3.14*rps_L) * wheelRadius;
+  v_R = (2*3.14*rps_R) * wheelRadius;
   
   totalPulses_L = 0;
   totalPulses_R = 0;
   lastTime = currentTime;
 }
+
 
 // Motor Part
 digitalWrite(MOTOR_L_F, HIGH);
@@ -121,12 +124,12 @@ Serial.println();
 Serial.print("RPS R: ");
 Serial.print(rps_R);
 Serial.println();
-//Serial.print("Delta Time L: ");
-//Serial.print(deltaTime_L);
-//Serial.println();
-//Serial.print("Delta Time R: ");
-//Serial.print(deltaTime_R);
-//Serial.println();
+Serial.print("v_L: ");
+Serial.print(v_L);
+Serial.println();
+Serial.print("v_R: ");
+Serial.print(v_R);
+Serial.println();
 
 delay(1000);
 
