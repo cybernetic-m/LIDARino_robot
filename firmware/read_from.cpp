@@ -47,7 +47,7 @@ int main() {
 
         std::cout << "Received: " << read_buf;
 
-        sleep(100)
+        sleep(100);
     }
 
     close(serial_port);
