@@ -1,17 +1,31 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <unistd.h> // For sleep function
 
 int main(int argc, char* argv[])
 {
-	//open arduino device file (linux)
-        std::ifstream arduino;
-	arduino.open( "/dev/ttyACM0");
+    // Open Arduino device file (Linux)
+    std::fstream arduino;
+    arduino.open("/dev/ttyACM0", std::ios::in | std::ios::out);
 
-    // Read from it
-    std::string response;
-    arduino >> response;
+    if (!arduino.is_open()) {
+        std::cerr << "Failed to open the device file." << std::endl;
+        return 1;
+    }
 
-    std::cout << "Received: " << response << std::endl;
+    // Continuously read from the serial port
+    while (true) {
+        std::string response;
+        if (arduino >> response) {
+            std::cout << "Received: " << response << std::endl;
+        } else {
+            std::cerr << "No data received." << std::endl;
+        }
+        sleep(1); // Sleep for 1 second before trying to read again
+    }
 
-	return 0;
+    arduino.close();
+
+    return 0;
 }
