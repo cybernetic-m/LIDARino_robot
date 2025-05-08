@@ -4,7 +4,7 @@
 int main(int argc, char* argv[])
 {
 	//open arduino device file (linux)
-    std::fstream arduino;
+    std::ofstream arduino;
 	arduino.open( "/dev/ttyACM1");
 
 	//write to it
