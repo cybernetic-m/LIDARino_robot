@@ -13,6 +13,8 @@ void loop() {
 	// read the data
         Serial.readBytes(buffer, 256);
 
+        Serial.print(buffer)
+
 	}
 
 }
