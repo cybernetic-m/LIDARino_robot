@@ -1,15 +1,31 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 
 int main(int argc, char* argv[])
 {
-	//open arduino device file (linux)
-        std::ofstream arduino;
-	arduino.open( "/dev/ttyACM1");
+    // Open Arduino device file (Linux)
+    std::fstream arduino;
+    arduino.open("/dev/ttyACM1", std::ios::in | std::ios::out);
 
-	//write to it
-        arduino << "Hello from C++!";
-	arduino.close();
+    if (!arduino.is_open()) {
+        std::cerr << "Failed to open the device file." << std::endl;
+        return 1;
+    }
 
-	return 0;
+    // Write to it
+    arduino << "Hello from C++!" << std::endl;
+
+    // Ensure the write operation is complete
+    arduino.flush();
+
+    // Read from it
+    std::string response;
+    arduino >> response;
+
+    std::cout << "Received: " << response << std::endl;
+
+    arduino.close();
+
+    return 0;
 }
