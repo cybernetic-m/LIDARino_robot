@@ -1,29 +1,52 @@
 #include <iostream>
-#include <fstream>
+#include <fcntl.h>
+#include <termios.h>
+#include <unistd.h>
 #include <string>
-#include <unistd.h> // For sleep function
 
 int main() {
-    // Open Arduino device file for reading (Linux)
-    std::ifstream arduino("/dev/ttyACM0");
+    int serial_port = open("/dev/ttyUSB0", O_RDWR);
 
-    if (!arduino.is_open()) {
-        std::cerr << "Failed to open the device file for reading." << std::endl;
+    if (serial_port < 0) {
+        std::cerr << "Error opening serial port" << std::endl;
         return 1;
     }
 
-    // Continuously read from the serial port
+    struct termios tty;
+    tcgetattr(serial_port, &tty);
+
+    cfsetispeed(&tty, B9600);
+    cfsetospeed(&tty, B9600);
+
+    tty.c_cflag &= ~PARENB; // No parity
+    tty.c_cflag &= ~CSTOPB; // 1 stop bit
+    tty.c_cflag &= ~CSIZE;
+    tty.c_cflag |= CS8;     // 8 bits per byte
+    tty.c_cflag &= ~CRTSCTS; // No flow control
+    tty.c_cflag |= CREAD | CLOCAL;
+
+    tty.c_lflag &= ~ICANON;
+    tty.c_lflag &= ~ECHO;
+    tty.c_lflag &= ~ECHOE;
+    tty.c_lflag &= ~ISIG;
+    tty.c_iflag &= ~(IXON | IXOFF | IXANY);
+    tty.c_oflag &= ~OPOST;
+
+    tcsetattr(serial_port, TCSANOW, &tty);
+
+    char read_buf[256];
     while (true) {
-        std::string response;
-        if (std::getline(arduino, response)) {
-            std::cout << "Received: " << response << std::endl;
-        } else {
-            std::cerr << "No data received." << std::endl;
+        memset(&read_buf, '\0', sizeof(read_buf));
+        int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+
+        if (num_bytes < 0) {
+            std::cerr << "Error reading from serial port" << std::endl;
+            break;
         }
-        sleep(1); // Sleep for 1 second before trying to read again
+
+        std::cout << "Received: " << read_buf;
     }
 
-    arduino.close();
-
+    close(serial_port);
     return 0;
 }
