@@ -10,7 +10,14 @@ int main(int argc, char* argv[])
 	//write to it
         arduino << "Hello from C++!";
 
-        arduino >> 
+    // Ensure the write operation is complete
+    arduino.flush();
+
+    // Read from it
+    std::string response;
+    arduino >> response;
+
+    std::cout << "Received: " << response << std::endl;
 	arduino.close();
 
 	return 0;
