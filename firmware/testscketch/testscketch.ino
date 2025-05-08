@@ -3,7 +3,6 @@ char buffer[256];
 void setup() {
     Serial.begin(9600);	// opens serial port, sets data rate to 9600 bps
     // set up the LCD's number of columns and rows:
-    lcd.begin(16, 2);
 }
 
 void loop() {
@@ -13,9 +12,6 @@ void loop() {
 
 	// read the data
         Serial.readBytes(buffer, 256);
-                
-	// say what you got:
-        lcd.print(buffer);
 
 	}
 
