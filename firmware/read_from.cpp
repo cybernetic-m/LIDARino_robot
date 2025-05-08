@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <string>
+#include <cstring>
 
 int main() {
     int serial_port = open("/dev/ttyUSB0", O_RDWR);
