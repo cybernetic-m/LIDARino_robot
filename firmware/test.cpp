@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
     // Read from it
     std::string response;
-    arduino >> response;
+    //arduino >> response;
 
     std::cout << "Received: " << response << std::endl;
 	arduino.close();
