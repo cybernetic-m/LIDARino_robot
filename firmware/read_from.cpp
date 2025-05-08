@@ -6,7 +6,7 @@
 #include <cstring>
 
 int main() {
-    int serial_port = open("/dev/ttyUSB0", O_RDWR);
+    int serial_port = open("/dev/ttyACM0", O_RDWR);
 
     if (serial_port < 0) {
         std::cerr << "Error opening serial port" << std::endl;
