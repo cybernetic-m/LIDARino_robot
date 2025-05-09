@@ -80,10 +80,22 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   showCanvas(canvas,1);
 
 
-  double x_world = rob_in_wd.x();  
-  std_msgs::String x_msg;
-  x_msg.data = std::to_string(x_world);
-  pos_pub.publish(x_msg);
+  double x_world = rob_in_wd.x(); 
+  double y_world= rob_in_wd.y(); 
+  float theta = Eigen::Rotation2Df( localizer.X.linear() ).angle();
+  
+  
+  char m[256];
+  std::snprintf(m, sizeof(m),
+                "x=%.6f  y=%.6f  theta=%.6f",
+                x_world, y_world, theta);
+  
+  std_msgs::String msg;
+  msg.data = m;
+
+  //msg.data = std::to_string(x_world)
+
+  pos_pub.publish(msg);
     
 }
 
