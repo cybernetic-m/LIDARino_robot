@@ -28,69 +28,62 @@ Canvas canvas;
 
 ros::Publisher pos_pub; 
 
-
-void strCallback(const sensor_msgs::LaserScan& scan) {
-    ROS_INFO("Received string ");
-}
-
-
-
 void laserCallback(const sensor_msgs::LaserScan& scan) {
+  ROS_INFO("Received string ");
 
+  std::vector<Vector2f> scan_endpoints;
+  for (size_t i=0; i<scan.ranges.size(); ++i) {
+    float alpha=scan.angle_min+i*scan.angle_increment;
+    float r=scan.ranges[i];
+    if (r< scan.range_min || r> scan.range_max)
+      continue;
+    scan_endpoints.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
+  }
 
-    std::vector<Vector2f> scan_endpoints;
-    for (size_t i=0; i<scan.ranges.size(); ++i) {
-      float alpha=scan.angle_min+i*scan.angle_increment;
-      float r=scan.ranges[i];
-      if (r< scan.range_min || r> scan.range_max)
-        continue;
-      scan_endpoints.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
+  if (first_scan) {
+    std::vector<Vector2i> grid_endpoints;
+    for (const auto &ep: scan_endpoints) {
+      grid_endpoints.push_back(grid_mapping.world2grid(ep).cast<int>());
     }
-  
-    if (first_scan) {
-      std::vector<Vector2i> grid_endpoints;
-      for (const auto &ep: scan_endpoints) {
-        grid_endpoints.push_back(grid_mapping.world2grid(ep).cast<int>());
-      }
-      dmap.clear();
-      int dmax2=pow(expansion_range/resolution, 2);
-      int ops=dmap.compute(grid_endpoints, dmax2);
-      cerr  << ops;
-      Grid_<float> distances;
-      dmap.copyTo(distances);
-      for (auto& d: distances.cells) {
-        d*=resolution;
-      }
-      localizer.setMap(grid_mapping, distances);
-      first_scan=false;
-      localizer.X.setIdentity();
-    } else {
-      float angle=scan.angle_min;
-      localizer.localize(scan_endpoints,10);
+    dmap.clear();
+    int dmax2=pow(expansion_range/resolution, 2);
+    int ops=dmap.compute(grid_endpoints, dmax2);
+    cerr  << ops;
+    Grid_<float> distances;
+    dmap.copyTo(distances);
+    for (auto& d: distances.cells) {
+      d*=resolution;
     }
+    localizer.setMap(grid_mapping, distances);
+    first_scan=false;
+    localizer.X.setIdentity();
+  } else {
+    float angle=scan.angle_min;
+    localizer.localize(scan_endpoints,10);
+  }
 
-    localizer.distances.draw(canvas, true); // the end of the rays, the endpoints obviously! 
-    for (const auto& ep: scan_endpoints) {
-      drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 255);
-    }
+  localizer.distances.draw(canvas, true); // the end of the rays, the endpoints obviously! 
+  for (const auto& ep: scan_endpoints) {
+    drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 255);
+  }
 
-    //added with respect to original code
-    Eigen::Vector2f rob_in_wd  = localizer.X.translation();      //position of the robot in the world!          
-    Eigen::Vector2f rob_in_gd = grid_mapping.world2grid(rob_in_wd);
-    drawCircle(canvas, rob_in_gd, 5, 200);
+  //added with respect to original code
+  Eigen::Vector2f rob_in_wd  = localizer.X.translation();      //position of the robot in the world!          
+  Eigen::Vector2f rob_in_gd = grid_mapping.world2grid(rob_in_wd);
+  drawCircle(canvas, rob_in_gd, 5, 200);
 
-    Eigen::Vector2f front = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.3f, 0.f);
-
-
-    drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front), 150);  // 150 little bit clearer than black
-
-    showCanvas(canvas,1);
+  Eigen::Vector2f front = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.3f, 0.f);
 
 
-    double x_world = rob_in_wd.x();  
-    std_msgs::String x_msg;
-    x_msg.data = std::to_string(x_world);
-    pos_pub.publish(x_msg);
+  drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front), 150);  // 150 little bit clearer than black
+
+  showCanvas(canvas,1);
+
+
+  double x_world = rob_in_wd.x();  
+  std_msgs::String x_msg;
+  x_msg.data = std::to_string(x_world);
+  pos_pub.publish(x_msg);
     
 }
 

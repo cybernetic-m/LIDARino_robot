@@ -142,8 +142,8 @@ int main(int argc, char** argv) {
    //while (ros::ok()) { // true if intrested only in the simulation 
    while(ros::ok()){
     world_object.tick(DT);          
-    //scanner.getScan();  
-    //grid_map.draw(canvas);
+    scanner.getScan();  
+    grid_map.draw(canvas);
     world_object.draw(canvas);       
     int ret = showCanvas(canvas, DT*100);   // 1 ms waitKey
 
@@ -181,9 +181,9 @@ int main(int argc, char** argv) {
         break;
     }
 
-    //msg.header.stamp = ros::Time::now();
-    //std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
-    //pub_scan.publish(msg);
+    msg.header.stamp = ros::Time::now();
+    std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
+    pub_scan.publish(msg);
     //rate.sleep();
     
     }
