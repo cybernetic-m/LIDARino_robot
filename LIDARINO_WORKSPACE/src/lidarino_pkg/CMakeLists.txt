@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs 
 )
 
+# Find OpenCV
+find_package(OpenCV REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -124,11 +126,19 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/lidarino_pkg.cpp
-# )
+## Declare C++ libraries
+add_library(grid_map src/grid_map.cpp)
+add_library(laser_scan src/laser_scan.cpp)
+add_library(laser_scanner src/laser_scanner.cpp)
+add_library(world_item src/world_item.cpp)
+add_library(draw_helpers src/draw_helpers.cpp)
 
+# Link the libraries to the required dependencies
+target_link_libraries(grid_map ${catkin_LIBRARIES})
+target_link_libraries(laser_scan ${catkin_LIBRARIES})
+target_link_libraries(laser_scanner ${catkin_LIBRARIES})
+target_link_libraries(draw_helpers ${catkin_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(world_item ${catkin_LIBRARIES} draw_helpers ${OpenCV_LIBS})
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -139,8 +149,22 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/lidarino_pkg_node.cpp)
 
-add_executable(${PROJECT_NAME}_node src/test1.cpp)
-target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES}) 
+add_executable(localization_node src/test1.cpp
+    src/dmap.cpp
+    src/dmap_localizer.cpp
+    src/grid_map.cpp)
+target_link_libraries(localization_node ${catkin_LIBRARIES} grid_map laser_scan laser_scanner world_item draw_helpers ${OpenCV_LIBS}) 
+
+add_executable(lidar_publisher_node src/simulation.cpp
+    src/dmap.cpp
+    src/dmap_localizer.cpp
+    src/grid_map.cpp
+    src/world_item.cpp
+    src/laser_scan.cpp
+    src/laser_scanner.cpp
+    src/isometry_2.cpp
+    )
+target_link_libraries(lidar_publisher_node ${catkin_LIBRARIES} grid_map laser_scan laser_scanner world_item draw_helpers ${OpenCV_LIBS}) 
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

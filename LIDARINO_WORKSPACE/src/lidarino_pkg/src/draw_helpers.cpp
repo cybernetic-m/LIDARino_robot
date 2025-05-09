@@ -7,7 +7,7 @@ void drawLine(Canvas& dest, const Eigen::Vector2f& p0, const Eigen::Vector2f& p1
 
 void drawCircle(Canvas& dest, const Eigen::Vector2f& center, int radius, uint8_t color) {
   cv::circle(dest, cv::Point(center[0], center[1]), radius,
-             cv::Scalar(color, color, color));
+             cv::Scalar(color, color, color), 1);  // Add explicit thickness parameter
 }
 
 int showCanvas(Canvas& canvas, int timeout_ms) {
