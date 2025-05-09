@@ -162,7 +162,6 @@ add_executable(lidar_publisher_node src/simulation.cpp
     src/world_item.cpp
     src/laser_scan.cpp
     src/laser_scanner.cpp
-    src/isometry_2.cpp
     )
 target_link_libraries(lidar_publisher_node ${catkin_LIBRARIES} grid_map laser_scan laser_scanner world_item draw_helpers ${OpenCV_LIBS}) 
 
