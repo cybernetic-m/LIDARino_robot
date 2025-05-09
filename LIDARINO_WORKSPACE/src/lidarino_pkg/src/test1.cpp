@@ -1,6 +1,9 @@
 #include <ros/ros.h>
 #include <iostream>
 #include <sensor_msgs/LaserScan.h>
+#include <geometry_msgs/PolygonStamped.h>
+#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/Point32.h>
 #include <dmap.h>
 #include <grid_map.h>
 #include <dmap_localizer.h>
@@ -84,7 +87,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   double y_world= rob_in_wd.y(); 
   float theta = Eigen::Rotation2Df( localizer.X.linear() ).angle();
   
-  
+  /*
   char m[256];
   std::snprintf(m, sizeof(m),
                 "x=%.6f  y=%.6f  theta=%.6f",
@@ -94,8 +97,49 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   msg.data = m;
 
   //msg.data = std::to_string(x_world)
+  
+  geometry_msgs::PolygonStamped  msg;
 
-  pos_pub.publish(msg);
+  msg.header.stamp = ros::Time::now();
+  
+  geometry_msgs::Polygon polygon;
+
+
+  geometry_msgs::Point32* square {geometry_msgs::Point32(x_world+0.25,y_world+0.25,0),geometry_msgs::Point32(x_world+0.25,y_world-0.25,0),geometry_msgs::Point32(x_world-0.25,y_world-0.25,0),geometry_msgs::Point32(x_world-0.25,y_world+0.25,0),geometry_msgs::Point32(x_world+0.25,y_world+0.25,0)};
+
+  polygon.points = square;
+
+  msg.Polygon = polygon;
+  */
+
+  geometry_msgs::PolygonStamped foot;
+  foot.header.stamp    = ros::Time::now();
+  foot.header.frame_id = "map";                 // or the world frame you use
+
+  const float half = 0.25f;                     // 0.5 m side → ±0.25 m
+  Eigen::Rotation2Df R(theta);                  // heading of the robot
+
+  std::array<Eigen::Vector2f,4> corners_local = {{
+      {-half, -half},
+      { half, -half},
+      { half,  half},
+      {-half,  half}
+  }};
+
+  for (const auto& c : corners_local) {
+    Eigen::Vector2f world = rob_in_wd + R * c;  // rotate & translate
+    geometry_msgs::Point32 p;
+    p.x = world.x();
+    p.y = world.y();
+    p.z = 0.0f;
+    foot.polygon.points.push_back(p);
+  }
+
+  /* Optionally repeat first point to close the loop (RViz not required) */
+  // foot.polygon.points.push_back(foot.polygon.points.front());
+
+  
+  pos_pub.publish(foot);
     
 }
 
@@ -107,8 +151,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
 
-    pos_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
+    //pos_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
 
+    pos_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
 
     //string topic_name=argv[1];
     string topic_name="LiDAR/LD06";
