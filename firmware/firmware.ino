@@ -73,7 +73,6 @@ pinMode(MOTOR_R_IN3, OUTPUT); // Set the Digital Pin  as IN3 (?) of the L298N Dr
 pinMode(MOTOR_R_IN4, OUTPUT); // Set the Digital Pin  as IN4 (?) of the L298N Driver
 pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
 
-
 interruptLastTime_L = millis(); // Initialize the last time at setup
 interruptLastTime_R = millis(); // Initialize the last time at setup
 
@@ -107,10 +106,31 @@ if (currentTime - lastTime >= deltaTime) {
   lastTime = currentTime;
 }
 
+delay(5000)
+digitalWrite(MOTOR_L_IN1, HIGH);
+digitalWrite(MOTOR_L_IN2, LOW);
+analogWrite(MOTOR_L_ENA, 128);
+delay(2000); 
 
-// Motor Part
-digitalWrite(MOTOR_L_F, HIGH);
-digitalWrite(MOTOR_L_B, LOW); 
+
+digitalWrite(MOTOR_L_IN1, LOW);
+digitalWrite(MOTOR_L_IN2, HIGH);
+analogWrite(MOTOR_L_ENA, 128);
+delay(2000);
+
+
+digitalWrite(MOTOR_R_IN3, HIGH);
+digitalWrite(MOTOR_L_IN4, LOW);
+analogWrite(MOTOR_R_ENB, 128);
+delay(2000);
+
+
+
+digitalWrite(MOTOR_R_IN3, LOW);
+digitalWrite(MOTOR_L_IN4, HIGH);
+analogWrite(MOTOR_R_ENB, 128);
+delay(2000);
+ 
 
 // Some print in the serial monitor to check the code working
 //Serial.print(cm);
@@ -139,7 +159,7 @@ delay(1000);
 
 }
 
-/*
+
 void encoderInterrupt_L() {
   
   interruptCurrentTime_L = millis(); // Get the current time
@@ -161,4 +181,3 @@ void encoderInterrupt_R() {
     totalPulses_R++; // Increment the total number of pulses
   }
 }
-*/
