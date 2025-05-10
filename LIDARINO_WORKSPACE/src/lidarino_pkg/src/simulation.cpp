@@ -23,7 +23,7 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
 
 
 int SCAN_FREQ_HZ = 100;
-float DT = 0.1f;
+float DT =0.01f;
 
 
 
@@ -39,23 +39,24 @@ int main(int argc, char** argv) {
     const float resolution= 0.1f;
 
 
-    GridMap grid_map(0, 0, 0.1);
+    GridMap grid_map(resolution,0, 0); // see here 
     grid_map.loadFromImage(filename, resolution);
-  
-  
+    Canvas canvas;
+
+    //grid_map.draw(canvas);
+
+
     World world_object(grid_map);
-    WorldItem object_0(world_object, fromCoefficients(5, 0, 0.5));
+
     Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2);
     Vector2f world_middle = grid_map.grid2world(grid_middle);
     UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), -0.5));
     robot.radius=1;
   
     LaserScan scan;
-    LaserScanner scanner(scan, robot, fromCoefficients(3, 0, -0));
+    LaserScanner scanner(scan, robot,Eigen::Isometry2f::Identity());
     scanner.radius = 0.5;
   
-    float dt=0.1;
-
     /*
 
     GridMap grid_map(resolution, 0, 0);
@@ -68,9 +69,6 @@ int main(int argc, char** argv) {
 
 
     //grid_map.draw(canvas);
-
-
-    // definizione di tutti gli oggetti del mondo
 
     WorldItem* items[3];
     memset(items, 0, sizeof(WorldItem*) * 3);
@@ -88,12 +86,6 @@ int main(int argc, char** argv) {
     robot.rv = 0;
     items[1] = &robot;
 
-    
-
-
-    
-    //...................................................................
-    
 
     LaserScan scan(range_min, range_max, angle_min,angle_max, ranges_num);
     Isometry2f scanner_in_robot = Eigen::Isometry2f::Identity();
@@ -102,6 +94,11 @@ int main(int argc, char** argv) {
     scanner.radius = 0.5f;
     items[2] = &scanner;
     */
+
+    
+    //...................................................................
+    
+
     
     float range_min=0.1,range_max=10, angle_min=-M_PI/2,angle_max=M_PI/2;
     int ranges_num=180;
@@ -120,31 +117,11 @@ int main(int argc, char** argv) {
 
     
 
-    
-   //const Iso2f forward  = Iso2f( Eigen::Translation2f( 0.1f,  0.f) );
-   //const Iso2f backward = Iso2f( Eigen::Translation2f(-0.1f,  0.f) );
    
-   //Iso2f left  = Iso2f::Identity();
-   //Iso2f right = Iso2f::Identity();
-   //left.rotate ( Rot2f( 0.1f) );
-   //right.rotate( Rot2f(-0.1f) );
- 
-
-   
-   //const Isometry2 forward(0.1, 0, 0);
-   //const Isometry2 backward(-0.1, 0, 0);
-   //const Isometry2 left(0, 0, 0.1);
-   //const Isometry2 right(0, 0, -0.1);
-   
-   
-   Canvas canvas;
    ros::Rate rate(SCAN_FREQ_HZ);
-   //while (ros::ok()) { // true if intrested only in the simulation 
+   //while (true) { // true if intrested only in the simulation 
    while(ros::ok()){
-    world_object.tick(DT);          
-    scanner.getScan();  
-    grid_map.draw(canvas);
-    world_object.draw(canvas);       
+
     int ret = showCanvas(canvas, DT*100);   // 1 ms waitKey
 
     if (ret>0)
@@ -152,34 +129,32 @@ int main(int argc, char** argv) {
     switch (ret) {
         case 81:  // left;
             robot.rv += 0.1;
-            //motion_iso = left;
             break;
         case 82:  // up;
             robot.tv += 0.1;
-            //motion_iso = forward;
             break;
         case 83:  // right;
             robot.rv -= 0.1;
-            //motion_iso = right;
             break;
         case 84:  // down;
             robot.tv -= 0.1;
-            //motion_iso = backward;
             break;
         case 32:  // space;
             robot.tv = 0;
             robot.rv = 0;
         default:;
     }
-
-
-    
-    //robot.move(motion_iso);
     
 
     if (ret == 'q') {
         break;
     }
+
+
+    world_object.tick(DT);          
+    scanner.getScan();  
+    grid_map.draw(canvas);
+    //world_object.draw(canvas);       
 
     msg.header.stamp = ros::Time::now();
     std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
