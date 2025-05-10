@@ -19,8 +19,12 @@ const int TRIGGER = 4;
 const int ECHO = 5;
 const int ENCODER_L = 2;
 const int ENCODER_R = 3; 
-const int MOTOR_L_B = 10;
-const int MOTOR_L_F = 11; 
+const int MOTOR_L_IN1 = 7;
+const int MOTOR_L_IN2 = 8;
+const int MOTOR_L_ENA = 9 
+const int MOTOR_R_IN3 = 12;
+const int MOTOR_R_IN4 = 13;
+const int MOTOR_R_ENB = 10;
 
 // ENCODERS VARIABLES
 int steps = 20; // Write your steps based on the encoder wheel (number of white/black spaces)
@@ -62,8 +66,13 @@ pinMode(ENCODER_L, INPUT); // Set the Digital Pin 2 as DO of the Encoder Left
 pinMode(ENCODER_R, INPUT); // Set the Digital Pin 3 as DO of the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_L), encoderInterrupt_L, RISING); // Attach the interrupt to the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_R), encoderInterrupt_R, RISING); // Attach the interrupt to the Encoder Right
-pinMode(MOTOR_L_B, OUTPUT); // Set the Digital Pin 10 as 1A (Forward command) of the Dual H-Bridge 
-pinMode(MOTOR_L_F, OUTPUT); // Set the Digital Pin 11 as 1B (Backward command) of the Dual H-Bridge
+pinMode(MOTOR_L_IN1, OUTPUT); // Set the Digital Pin  as IN1 (?) of the L298N Driver
+pinMode(MOTOR_L_IN2, OUTPUT); // Set the Digital Pin  as IN2 (?) of the L298N Driver
+pinMode(MOTOR_L_ENA, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
+pinMode(MOTOR_R_IN3, OUTPUT); // Set the Digital Pin  as IN3 (?) of the L298N Driver
+pinMode(MOTOR_R_IN4, OUTPUT); // Set the Digital Pin  as IN4 (?) of the L298N Driver
+pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
+
 
 interruptLastTime_L = millis(); // Initialize the last time at setup
 interruptLastTime_R = millis(); // Initialize the last time at setup
@@ -76,13 +85,14 @@ lastTime = millis(); // Initialize the last time at setup
 // Loop
 void loop() {
 
+// Measure the actual time
+currentTime = millis(); 
+
 // Trigger the ultrasound sensor
 ultrasound_trigger(TRIGGER); 
 
 // Read the echo from the ultrasound sensor
 cm = ultrasound_read(ECHO); 
-
-currentTime = millis(); // measure the actual time
 
 
 if (currentTime - lastTime >= deltaTime) {
@@ -112,12 +122,6 @@ Serial.println();
 Serial.print("R Total Pulses: ");
 Serial.print(totalPulses_R);
 Serial.println();
-//Serial.print("L Total Angle: ");
-//Serial.print(totalAngle_L);
-//Serial.println();
-//Serial.print("R Total Angle: ");
-//Serial.print(totalAngle_R);
-//Serial.println();
 Serial.print("RPS L: ");
 Serial.print(rps_L);
 Serial.println();
@@ -135,6 +139,7 @@ delay(1000);
 
 }
 
+/*
 void encoderInterrupt_L() {
   
   interruptCurrentTime_L = millis(); // Get the current time
@@ -156,3 +161,4 @@ void encoderInterrupt_R() {
     totalPulses_R++; // Increment the total number of pulses
   }
 }
+*/
