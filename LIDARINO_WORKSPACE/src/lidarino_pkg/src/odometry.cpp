@@ -73,8 +73,8 @@ int main(int argc, char** argv){
 
     //set the velocity
     odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = vx;
-    odom.twist.twist.linear.y = vy;
+    odom.twist.twist.linear.x = vl * cos(th);
+    odom.twist.twist.linear.y = vl * sin(th);
     odom.twist.twist.angular.z = vth;
 
     //publish the message
