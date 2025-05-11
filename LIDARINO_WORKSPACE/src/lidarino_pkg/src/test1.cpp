@@ -20,50 +20,76 @@ GridMapping grid_mapping;
 DMapLocalizer localizer;
 bool first_scan=true;
 
+int counter=0;
 
 // parameters of the MAP to be changed for the moment copied pasted
 float resolution=0.05;
 float max_range=10;
 float expansion_range=1;
 Canvas canvas;
-
-////////////
+Isometry2f lmap_pose;
+///
 
 ros::Publisher pos_pub; 
 
-void laserCallback(const sensor_msgs::LaserScan& scan) {
-  ROS_INFO("Received string ");
-
-  std::vector<Vector2f> scan_endpoints;
+void computeScanEndpoints(std::vector<Vector2f>& dest, const sensor_msgs::LaserScan& scan) {
+  dest.clear();
   for (size_t i=0; i<scan.ranges.size(); ++i) {
     float alpha=scan.angle_min+i*scan.angle_increment;
     float r=scan.ranges[i];
     if (r< scan.range_min || r> scan.range_max)
       continue;
-    scan_endpoints.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
+    dest.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
   }
+}
 
-  if (first_scan) {
+void computeGridEndpoints(std::vector<Vector2i>& dest, const std::vector<Vector2f>& src) {
+  dest.clear();
+  for (const auto &ep: src) {
+    dest.push_back(grid_mapping.world2grid(ep).cast<int>());
+  }
+}
+
+void initLocalizer(std::vector<Vector2f>& scan_endpoints) {
     std::vector<Vector2i> grid_endpoints;
-    for (const auto &ep: scan_endpoints) {
-      grid_endpoints.push_back(grid_mapping.world2grid(ep).cast<int>());
-    }
+    computeGridEndpoints(grid_endpoints, scan_endpoints);
     dmap.clear();
     int dmax2=pow(expansion_range/resolution, 2);
     int ops=dmap.compute(grid_endpoints, dmax2);
-    cerr  << ops;
+    cerr << "refresh n."  << counter++ << endl;
     Grid_<float> distances;
     dmap.copyTo(distances);
     for (auto& d: distances.cells) {
       d*=resolution;
     }
     localizer.setMap(grid_mapping, distances);
+}
+
+void laserCallback(const sensor_msgs::LaserScan& scan) {
+  
+  std::vector<Vector2f> scan_endpoints;
+  computeScanEndpoints(scan_endpoints, scan);
+
+  if (first_scan) {
+    initLocalizer(scan_endpoints);
     first_scan=false;
     localizer.X.setIdentity();
-  } else {
+  } 
+
+  else{
     float angle=scan.angle_min;
     localizer.localize(scan_endpoints,10);
+    float translation_norm=localizer.X.translation().norm();
+    float orientation_norm=fabs(Eigen::Rotation2Df(localizer.X.linear()).angle());
+    //printf("trans %f\n",translation_norm);
+    //printf("orient %f\n", orientation_norm);
+    if (translation_norm>0.1 || orientation_norm>0.5) {
+
+      lmap_pose = lmap_pose*localizer.X;
+      initLocalizer(scan_endpoints);
+    }
   }
+
 
   localizer.distances.draw(canvas, true); 
   
@@ -71,9 +97,14 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
     drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 0);
   }
 
+
   //added with respect to original code
   Eigen::Vector2f rob_in_wd  = localizer.X.translation();              
   Eigen::Vector2f rob_in_gd = grid_mapping.world2grid(rob_in_wd);
+  double x_world = rob_in_wd.x(); 
+  double y_world= rob_in_wd.y(); 
+  float theta = Eigen::Rotation2Df( localizer.X.linear() ).angle();
+
   drawCircle(canvas, rob_in_gd, 5, 0);
 
   Eigen::Vector2f front = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.3f, 0.f);
@@ -82,12 +113,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front), 128);  // 128 grey
 
   showCanvas(canvas,1);
-
-
-  double x_world = rob_in_wd.x(); 
-  double y_world= rob_in_wd.y(); 
-  float theta = Eigen::Rotation2Df( localizer.X.linear() ).angle();
-  
+ 
   /*
   char m[256];
   std::snprintf(m, sizeof(m),
@@ -150,7 +176,7 @@ int main(int argc, char** argv) {
     //pos_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
 
     pos_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
-
+    
     //string topic_name=argv[1];
     string topic_name="LiDAR/LD06";
 
@@ -160,10 +186,10 @@ int main(int argc, char** argv) {
     grid_mapping.reset(Vector2f(-grid_size*resolution/2, grid_size*resolution/2), resolution);
     cerr << "grid_size" << grid_size << endl;
     cerr << "world center"  << grid_mapping.world2grid(Vector2f(0,0)).transpose() << endl;
-  
+    
 
+    lmap_pose.setIdentity();
     ros::Subscriber sub_main = n.subscribe<const sensor_msgs::LaserScan&>(topic_name, 10, laserCallback);
-
 
     while (ros::ok()) {
       ros::spinOnce();

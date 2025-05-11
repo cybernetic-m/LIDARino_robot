@@ -5,6 +5,7 @@
 #include "laser_scan.h"
 #include "laser_scanner.h"
 #include "world_item.h"
+#include <geometry_msgs/Twist.h>          
 
 
 using namespace std;
@@ -35,7 +36,9 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
+    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 
+    
     const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
     const float resolution = 0.1f;
 
@@ -161,8 +164,19 @@ int main(int argc, char** argv) {
     msg.header.stamp = ros::Time::now();
     std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
     pub_scan.publish(msg);
-    //rate.sleep();
+
+    geometry_msgs::Twist twist_msg;
+    twist_msg.linear.x  = robot.tv;  
+    twist_msg.linear.y  = 0.0;
+    twist_msg.linear.z  = 0.0;
+    twist_msg.angular.x = 0.0;
+    twist_msg.angular.y = 0.0;
+    twist_msg.angular.z = robot.rv;   
+    pub_vel.publish(twist_msg);
     
+
+    //rate.sleep();
+
     }
     
     return 0;
