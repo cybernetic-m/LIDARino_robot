@@ -2,14 +2,14 @@
   Firmware LIDARino
 
   Components details:
-  1) Dual H-Bridge 
-  2) 
+  1) Dual H-Bridge L298N
+  2) Arduino Uno
+  3) Raspberry Pi 
+  4) 
 
   created 26 Aprile 2025
   by M. Romano, P. Renzi, F. Giarrusso
   modified 
-
-
 
 
  *  Motor Configuration
@@ -41,11 +41,11 @@ const int MOTOR_R_ENB = 10;
 
 
 // ENCODERS VARIABLES
-int steps = 20; // Write your steps based on the encoder wheel (number of white/black spaces)
-int deltaTime = 1000; // Write here the interval of update of the rpm and velocities (ms)
-float wheelRadius = 0.032;  // Write here your wheel radius  (our wheel diameter is 6.3 cm => 0.063 m)
-volatile float currentTime = 0; // In the loop measure the current time to compare with lastTime 
-volatile float lastTime = 0; // The previous currentTime on previous loop
+extern int steps; // Write your steps based on the encoder wheel (number of white/black spaces)
+extern int deltaTime; // Write here the interval of update of the rpm and velocities (ms)
+extern float wheelRadius;  // Write here your wheel radius  (our wheel diameter is 6.3 cm => 0.063 m)
+extern volatile float currentTime; // In the loop measure the current time to compare with lastTime 
+extern volatile float lastTime; // The previous currentTime on previous loop
 
 // Recall of the variables initialized in "encoderWheel.cpp" for the LEFT wheel encoder
 extern volatile unsigned long totalPulses_L; // Total number of pulses
@@ -71,16 +71,13 @@ pinMode(ENCODER_L, INPUT); // Set the Digital Pin 2 as DO of the Encoder Left
 pinMode(ENCODER_R, INPUT); // Set the Digital Pin 3 as DO of the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_L), encoderInterrupt_L, RISING); // Attach the interrupt to the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_R), encoderInterrupt_R, RISING); // Attach the interrupt to the Encoder Right
-pinMode(MOTOR_L_IN1, OUTPUT); // Set the Digital Pin  as IN1 (?) of the L298N Driver
-pinMode(MOTOR_L_IN2, OUTPUT); // Set the Digital Pin  as IN2 (?) of the L298N Driver
-pinMode(MOTOR_L_ENA, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
-pinMode(MOTOR_R_IN3, OUTPUT); // Set the Digital Pin  as IN3 (?) of the L298N Driver
-pinMode(MOTOR_R_IN4, OUTPUT); // Set the Digital Pin  as IN4 (?) of the L298N Driver
-pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
+pinMode(MOTOR_L_IN1, OUTPUT); // Set the Digital Pin as IN1 of the L298N Driver
+pinMode(MOTOR_L_IN2, OUTPUT); // Set the Digital Pin as IN2 of the L298N Driver
+pinMode(MOTOR_L_ENA, OUTPUT); // Set the Digital Pin as ENA of the L298N Driver
+pinMode(MOTOR_R_IN3, OUTPUT); // Set the Digital Pin as IN3 of the L298N Driver
+pinMode(MOTOR_R_IN4, OUTPUT); // Set the Digital Pin as IN4 of the L298N Driver
+pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin as ENA of the L298N Driver
 
-
-//interruptLastTime_L = millis(); // Initialize the last time at setup
-//interruptLastTime_R = millis(); // Initialize the last time at setup
 encoderStart();
 
 lastTime = millis(); // Initialize the last time at setup
@@ -107,24 +104,8 @@ cm = ultrasound_read(ECHO);
 
 
 if (currentTime - lastTime >= deltaTime) {
-  rps_L = (float)totalPulses_L / ((steps*2) * (deltaTime/1000.0)) ;
-  rps_R = (float)totalPulses_R / ((steps*2) * (deltaTime/1000.0));
-
-  v_L = (2*3.14*rps_L) * wheelRadius;
-  v_R = (2*3.14*rps_R) * wheelRadius;
-
-  Serial.print("L Total Pulses: ");
-  Serial.print(totalPulses_L);
-  Serial.println();
-  Serial.print("R Total Pulses: ");
-  Serial.print(totalPulses_R);
-  Serial.println();
-    
-  totalPulses_L = 0;
-  totalPulses_R = 0;
-  lastTime = currentTime;
+  computeVelocities();
 }
-
 
 
 analogWrite(MOTOR_L_ENA, 255);
@@ -174,27 +155,3 @@ delay(1000);
 
 
 }
-
-/*
-void encoderInterrupt_L() {
-  
-  interruptCurrentTime_L = millis(); // Get the current time
-  interruptBetweenTime_L = (interruptCurrentTime_L - interruptLastTime_L); // (s)
-  
-  if(interruptBetweenTime_L > 6) {
-    interruptLastTime_L = interruptCurrentTime_L; // Update the last time
-    totalPulses_L++; // Increment the total number of pulses
-  }
-}
-
-void encoderInterrupt_R() {
-  
-  interruptCurrentTime_R = millis(); // Get the current time
-  interruptBetweenTime_R = (interruptCurrentTime_R - interruptLastTime_R); // (s)
-
-  if(interruptBetweenTime_R > 6) {
-    interruptLastTime_R = interruptCurrentTime_R; // Update the last time
-    totalPulses_R++; // Increment the total number of pulses
-  }
-}
-*/

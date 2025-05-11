@@ -10,6 +10,7 @@ long ultrasound_read(int echo_pin);
 void encoderInterrupt_L();
 void encoderInterrupt_R();
 void encoderStart();
+void computeVelocities();
 
 
 #endif
