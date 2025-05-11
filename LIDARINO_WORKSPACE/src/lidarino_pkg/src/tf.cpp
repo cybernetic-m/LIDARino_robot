@@ -14,12 +14,12 @@ int main(int argc, char** argv){
       tf::StampedTransform(
         tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.7, 0.0, 0.0)),
         ros::Time::now(),"base_link", "base_laser"));
-    /*
+    
     broadcaster.sendTransform(
         tf::StampedTransform(
-            tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.7, 0.0, 0.0)),
-            ros::Time::now(),"base_link", "base_laser"));
-    */
+            tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.0)),
+            ros::Time::now(),"map", "base_link"));
+    
     r.sleep();
   }
 }
