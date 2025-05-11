@@ -23,7 +23,8 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
 
 
 int SCAN_FREQ_HZ = 100;
-float DT =0.01f;
+float DT = 0.1f;
+
 
 
 
@@ -36,27 +37,25 @@ int main(int argc, char** argv) {
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
 
     const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
-    const float resolution= 0.1f;
+    const float resolution = 0.1f;
 
 
-    GridMap grid_map(resolution,0, 0); // see here 
+    GridMap grid_map(resolution,0, 0 );
     grid_map.loadFromImage(filename, resolution);
-    Canvas canvas;
-
-    //grid_map.draw(canvas);
-
-
+  
+  
     World world_object(grid_map);
-
     Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2);
     Vector2f world_middle = grid_map.grid2world(grid_middle);
     UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), -0.5));
-    robot.radius=1;
+    robot.radius=0.20;
   
     LaserScan scan;
-    LaserScanner scanner(scan, robot,Eigen::Isometry2f::Identity());
-    scanner.radius = 0.5;
+    LaserScanner scanner(scan, robot, fromCoefficients(-0.07, 0, -0));
+    scanner.radius = 0.05;
   
+
+
     /*
 
     GridMap grid_map(resolution, 0, 0);
@@ -69,6 +68,9 @@ int main(int argc, char** argv) {
 
 
     //grid_map.draw(canvas);
+
+
+    // world object definition
 
     WorldItem* items[3];
     memset(items, 0, sizeof(WorldItem*) * 3);
@@ -93,12 +95,13 @@ int main(int argc, char** argv) {
     LaserScanner scanner(scan, robot, scanner_in_robot, SCAN_FREQ_HZ);
     scanner.radius = 0.5f;
     items[2] = &scanner;
-    */
 
     
     //...................................................................
     
 
+
+    */
     
     float range_min=0.1,range_max=10, angle_min=-M_PI/2,angle_max=M_PI/2;
     int ranges_num=180;
@@ -115,13 +118,17 @@ int main(int argc, char** argv) {
 
     msg.ranges.resize(ranges_num);
 
-    
 
    
+   
+   Canvas canvas;
    ros::Rate rate(SCAN_FREQ_HZ);
-   //while (true) { // true if intrested only in the simulation 
+   //while (true) { // if intrested only in the simulation 
    while(ros::ok()){
-
+    world_object.tick(DT);          
+    scanner.getScan();  
+    grid_map.draw(canvas);
+    world_object.draw(canvas);       
     int ret = showCanvas(canvas, DT*100);   // 1 ms waitKey
 
     if (ret>0)
@@ -144,17 +151,12 @@ int main(int argc, char** argv) {
             robot.rv = 0;
         default:;
     }
+
     
 
     if (ret == 'q') {
         break;
     }
-
-
-    world_object.tick(DT);          
-    scanner.getScan();  
-    grid_map.draw(canvas);
-    //world_object.draw(canvas);       
 
     msg.header.stamp = ros::Time::now();
     std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
@@ -165,7 +167,5 @@ int main(int argc, char** argv) {
     
     return 0;
 }
-
-
 
 
