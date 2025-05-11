@@ -3,6 +3,9 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 
+double vl = 0.0;
+double vr = 0.0;
+
 void VelocitiesCallback(geometry_msgs::Twist velocities){
     vl = velocities.linear.x;
     vr = velocities.angular.z;
@@ -20,8 +23,6 @@ int main(int argc, char** argv){
   double y = 0.0;
   double th = 0.0;
 
-  double vl = 0.0;
-  double vr = 0.0;
 
   ros::Time current_time, last_time;
   current_time = ros::Time::now();
@@ -75,7 +76,7 @@ int main(int argc, char** argv){
     odom.child_frame_id = "base_link";
     odom.twist.twist.linear.x = vl * cos(th);
     odom.twist.twist.linear.y = vl * sin(th);
-    odom.twist.twist.angular.z = vth;
+    odom.twist.twist.angular.z = vr;
 
     //publish the message
     odom_pub.publish(odom);
