@@ -167,7 +167,7 @@ int main(int argc, char** argv) {
 
     geometry_msgs::Twist twist_msg;
     //geometry_msgs::TwistStamped twist_msg;
-    twist_msg.header.stamp = ros::Time::now();
+    //twist_msg.header.stamp = ros::Time::now();
     twist_msg.linear.x  = robot.tv;  
     twist_msg.angular.z = robot.rv;   
     pub_vel.publish(twist_msg);
