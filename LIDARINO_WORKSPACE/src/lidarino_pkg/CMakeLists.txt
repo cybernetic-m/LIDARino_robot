@@ -171,6 +171,11 @@ target_link_libraries(pos_subscriber_node ${catkin_LIBRARIES} )
 add_executable(tf_node src/tf.cpp )
 target_link_libraries(tf_node ${catkin_LIBRARIES} ) 
 
+add_dependencies(tf_node
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+  ${catkin_EXPORTED_TARGETS}
+)
+
 add_executable(odometry_node src/odometry.cpp )
 target_link_libraries(odometry_node ${catkin_LIBRARIES} ) 
 
