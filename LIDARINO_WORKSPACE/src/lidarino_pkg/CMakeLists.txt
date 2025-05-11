@@ -168,6 +168,12 @@ target_link_libraries(lidar_publisher_node ${catkin_LIBRARIES} grid_map laser_sc
 add_executable(pos_subscriber_node src/pos_subscriber.cpp )
 target_link_libraries(pos_subscriber_node ${catkin_LIBRARIES} ) 
 
+add_executable(tf_node src/tf.cpp )
+target_link_libraries(pos_subscriber_node ${catkin_LIBRARIES} ) 
+
+add_executable(odometry_node src/odometry.cpp )
+target_link_libraries(pos_subscriber_node ${catkin_LIBRARIES} ) 
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
