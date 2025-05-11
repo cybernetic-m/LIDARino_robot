@@ -6,7 +6,7 @@
 #include "laser_scanner.h"
 #include "world_item.h"
 #include <geometry_msgs/Twist.h>          
-
+#include <geometry_msgs/TwistStamped.h>
 
 using namespace std;
 
@@ -166,18 +166,13 @@ int main(int argc, char** argv) {
     pub_scan.publish(msg);
 
     geometry_msgs::Twist twist_msg;
+    //geometry_msgs::TwistStamped twist_msg;
+    twist_msg.header.stamp = ros::Time::now();
     twist_msg.linear.x  = robot.tv;  
-    twist_msg.linear.y  = 0.0;
-    twist_msg.linear.z  = 0.0;
-    twist_msg.angular.x = 0.0;
-    twist_msg.angular.y = 0.0;
     twist_msg.angular.z = robot.rv;   
     pub_vel.publish(twist_msg);
     
-
-    //rate.sleep();
-
-    }
+   }
     
     return 0;
 }
