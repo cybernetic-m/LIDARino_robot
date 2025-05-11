@@ -11,7 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   roscpp
   sensor_msgs
-  std_msgs 
+  std_msgs
+  tf 
 )
 
 # Find OpenCV
@@ -110,7 +111,7 @@ catkin_package(
 #  LIBRARIES lidarino_pkg
 #  CATKIN_DEPENDS cv_bridge roscpp sensor_msgs
 #  DEPENDS system_lib
-CATKIN_DEPENDS roscpp std_msgs sensor_msgs cv_bridge
+CATKIN_DEPENDS roscpp std_msgs sensor_msgs cv_bridge tf
 )
 
 ###########
