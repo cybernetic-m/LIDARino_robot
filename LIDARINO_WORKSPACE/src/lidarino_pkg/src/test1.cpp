@@ -20,9 +20,8 @@ GridMapping grid_mapping;
 DMapLocalizer localizer;
 bool first_scan=true;
 
- 
 
-// parameters of the CANVAS to be changed for the moment copied pasted
+// parameters of the MAP to be changed for the moment copied pasted
 float resolution=0.05;
 float max_range=10;
 float expansion_range=1;
@@ -66,20 +65,21 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
     localizer.localize(scan_endpoints,10);
   }
 
-  localizer.distances.draw(canvas, true); // the end of the rays, the endpoints obviously! 
+  localizer.distances.draw(canvas, true); 
+  
   for (const auto& ep: scan_endpoints) {
-    drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 255);
+    drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 0);
   }
 
   //added with respect to original code
-  Eigen::Vector2f rob_in_wd  = localizer.X.translation();      //position of the robot in the world!          
+  Eigen::Vector2f rob_in_wd  = localizer.X.translation();              
   Eigen::Vector2f rob_in_gd = grid_mapping.world2grid(rob_in_wd);
-  drawCircle(canvas, rob_in_gd, 5, 200);
+  drawCircle(canvas, rob_in_gd, 5, 0);
 
   Eigen::Vector2f front = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.3f, 0.f);
 
 
-  drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front), 150);  // 150 little bit clearer than black
+  drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front), 128);  // 128 grey
 
   showCanvas(canvas,1);
 
@@ -98,7 +98,19 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   msg.data = m;
 
   //msg.data = std::to_string(x_world)
- 
+  
+  geometry_msgs::PolygonStamped  msg;
+
+  msg.header.stamp = ros::Time::now();
+  
+  geometry_msgs::Polygon polygon;
+
+
+  geometry_msgs::Point32* square {geometry_msgs::Point32(x_world+0.25,y_world+0.25,0),geometry_msgs::Point32(x_world+0.25,y_world-0.25,0),geometry_msgs::Point32(x_world-0.25,y_world-0.25,0),geometry_msgs::Point32(x_world-0.25,y_world+0.25,0),geometry_msgs::Point32(x_world+0.25,y_world+0.25,0)};
+
+  polygon.points = square;
+
+  msg.Polygon = polygon;
   */
 
   geometry_msgs::PolygonStamped foot;
@@ -124,9 +136,10 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   }
 
   pos_pub.publish(foot);
+    
 }
 
-
+  
 
 int main(int argc, char** argv) {
     
@@ -141,6 +154,7 @@ int main(int argc, char** argv) {
     //string topic_name=argv[1];
     string topic_name="LiDAR/LD06";
 
+    //
     int grid_size = 2*(max_range+expansion_range)/resolution;
     dmap.resize(grid_size, grid_size);
     grid_mapping.reset(Vector2f(-grid_size*resolution/2, grid_size*resolution/2), resolution);
