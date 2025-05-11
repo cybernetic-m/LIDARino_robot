@@ -83,5 +83,7 @@ int main(int argc, char** argv){
 
     last_time = current_time;
     r.sleep();
+
+    cerr << "x" << odom_trans.transform.translation.x << "y" << odom_trans.transform.translation.y << endl;
   }
 }
