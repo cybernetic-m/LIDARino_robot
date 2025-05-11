@@ -47,27 +47,18 @@ float wheelRadius = 0.032;  // Write here your wheel radius  (our wheel diameter
 volatile float currentTime = 0; // In the loop measure the current time to compare with lastTime 
 volatile float lastTime = 0; // The previous currentTime on previous loop
 
-// Definition of variables for the LEFT wheel encoder
-//int anglePerPulse_L = 360 / (steps*2); // The encoder has 20 pulses per revolution, we used steps*2 because we are counting +1 each change (both rising or falling)
-volatile unsigned long totalPulses_L = 0; // Total number of pulses
-volatile float interruptCurrentTime_L = 0; // Current time of the Right Interrupt
-volatile float interruptLastTime_L = 0; // Time of the precedent interrupt
-volatile float interruptBetweenTime_L = 0; // Time difference between two readings
-float rps_L=0; // Round Per Seconds of the left wheel
-float v_L=0; // Linear Velocity of the contact point of the left wheel
+// Recall of the variables initialized in "encoderWheel.cpp" for the LEFT wheel encoder
+extern volatile unsigned long totalPulses_L; // Total number of pulses
+extern float rps_L; // Round Per Seconds of the left wheel
+extern float v_L; // Linear Velocity of the contact point of the left wheel
 
-// Definition of variables for the RIGTH wheel encoder
-//int anglePerPulse_R = 360 / (steps*2); // The encoder has 20 pulses per revolution, we used steps*2 because we are counting +1 each change (both rising or falling)
-volatile unsigned long totalPulses_R = 0; // Total number of pulses
-volatile float interruptCurrentTime_R = 0; // Current time of the Right Interrupt
-volatile float interruptLastTime_R = 0; // Time of the precedent interrupt
-volatile float interruptBetweenTime_R = 0; // Time difference between two readings
-float rps_R=0; // Round Per Seconds of the right wheel
-float v_R=0; // Linear Velocity of the contact point of the right wheel
+// Recall of the variables initialized in "encoderWheel.cpp" for the RIGTH wheel encoder
+extern volatile unsigned long totalPulses_R; // Total number of pulses
+extern float rps_R; // Round Per Seconds of the right wheel
+extern float v_R; // Linear Velocity of the contact point of the right wheel
 
 // ULTRASOUND VARIABLES
-// Definition of the centimeters for ultrasound sensor
-long cm;
+long cm; // Definition of the centimeters for ultrasound sensor
 
 
 // Setup 
@@ -80,7 +71,6 @@ pinMode(ENCODER_L, INPUT); // Set the Digital Pin 2 as DO of the Encoder Left
 pinMode(ENCODER_R, INPUT); // Set the Digital Pin 3 as DO of the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_L), encoderInterrupt_L, RISING); // Attach the interrupt to the Encoder Left
 attachInterrupt(digitalPinToInterrupt(ENCODER_R), encoderInterrupt_R, RISING); // Attach the interrupt to the Encoder Right
-
 pinMode(MOTOR_L_IN1, OUTPUT); // Set the Digital Pin  as IN1 (?) of the L298N Driver
 pinMode(MOTOR_L_IN2, OUTPUT); // Set the Digital Pin  as IN2 (?) of the L298N Driver
 pinMode(MOTOR_L_ENA, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
@@ -89,8 +79,9 @@ pinMode(MOTOR_R_IN4, OUTPUT); // Set the Digital Pin  as IN4 (?) of the L298N Dr
 pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin  as ENA (?) of the L298N Driver
 
 
-interruptLastTime_L = millis(); // Initialize the last time at setup
-interruptLastTime_R = millis(); // Initialize the last time at setup
+//interruptLastTime_L = millis(); // Initialize the last time at setup
+//interruptLastTime_R = millis(); // Initialize the last time at setup
+encoderStart();
 
 lastTime = millis(); // Initialize the last time at setup
 
@@ -136,9 +127,9 @@ if (currentTime - lastTime >= deltaTime) {
 
 
 
-analogWrite(MOTOR_L_ENA, 100);
+analogWrite(MOTOR_L_ENA, 255);
 
-analogWrite(MOTOR_R_ENB, 100);
+analogWrite(MOTOR_R_ENB, 255);
 
 
 // Some print in the serial monitor to check the code working
@@ -165,14 +156,13 @@ Serial.print(v_R);
 Serial.println();
 
 
-if (cm <= 10) {
+if (cm <= 10 && cm != 0) {
 digitalWrite(MOTOR_R_IN3, LOW);
 digitalWrite(MOTOR_R_IN4, LOW);
 digitalWrite(MOTOR_L_IN1, LOW);
 digitalWrite(MOTOR_L_IN2, LOW);
   }
 else {
-  
 digitalWrite(MOTOR_R_IN3, HIGH);
 digitalWrite(MOTOR_R_IN4, LOW);
 digitalWrite(MOTOR_L_IN1, HIGH);
@@ -185,13 +175,13 @@ delay(1000);
 
 }
 
-
+/*
 void encoderInterrupt_L() {
   
   interruptCurrentTime_L = millis(); // Get the current time
   interruptBetweenTime_L = (interruptCurrentTime_L - interruptLastTime_L); // (s)
   
-  if(interruptBetweenTime_L > 5) {
+  if(interruptBetweenTime_L > 6) {
     interruptLastTime_L = interruptCurrentTime_L; // Update the last time
     totalPulses_L++; // Increment the total number of pulses
   }
@@ -202,8 +192,9 @@ void encoderInterrupt_R() {
   interruptCurrentTime_R = millis(); // Get the current time
   interruptBetweenTime_R = (interruptCurrentTime_R - interruptLastTime_R); // (s)
 
-  if(interruptBetweenTime_R > 5) {
+  if(interruptBetweenTime_R > 6) {
     interruptLastTime_R = interruptCurrentTime_R; // Update the last time
     totalPulses_R++; // Increment the total number of pulses
   }
 }
+*/
