@@ -6,6 +6,8 @@
 double vl = 0.0;
 double vr = 0.0;
 
+using namespace std; 
+
 void VelocitiesCallback(geometry_msgs::Twist velocities){
     vl = velocities.linear.x;
     vr = velocities.angular.z;
