@@ -26,6 +26,7 @@
 */
 
 #include "firmlib.h"
+#include "Motors.h"
 
 // PIN
 const int TRIGGER = 4;
@@ -60,6 +61,10 @@ extern float v_R; // Linear Velocity of the contact point of the right wheel
 // ULTRASOUND VARIABLES
 long cm; // Definition of the centimeters for ultrasound sensor
 
+// Motor definitions
+Motors motors;
+float v_max = 0.4; // our is 0.4 m/s (max velocity reached by your robot)
+float L = 0.135; // Distance between the two wheels (needed to compute v_L and v_R) [in our case 0.135 m]
 
 // Setup 
 void setup() {
@@ -80,12 +85,11 @@ pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin as ENA of the L298N Driver
 
 encoderStart();
 
+motors = Motors(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_R_IN3, MOTOR_R_IN4, MOTOR_L_ENA, MOTOR_R_ENB, v_max, L);
+
 lastTime = millis(); // Initialize the last time at setup
 
-digitalWrite(MOTOR_R_IN3, HIGH);
-digitalWrite(MOTOR_R_IN4, LOW);
-digitalWrite(MOTOR_L_IN1, HIGH);
-digitalWrite(MOTOR_L_IN2, LOW);
+
 }
 
 
@@ -107,14 +111,16 @@ if (currentTime - lastTime >= deltaTime) {
   computeVelocities();
 }
 
+delay(15000);
 
-analogWrite(MOTOR_L_ENA, 255);
+motors.Move(0.25, 0.0, 3000);
 
-analogWrite(MOTOR_R_ENB, 255);
+
+
 
 
 // Some print in the serial monitor to check the code working
-//Serial.print("Front distance [cm]");
+Serial.print("Front distance [cm]");
 Serial.print(cm);
 Serial.println();
 //Serial.print("L Total Pulses: ");
@@ -137,21 +143,15 @@ Serial.print(v_R);
 Serial.println();
 
 
+
 if (cm <= 10 && cm != 0) {
-digitalWrite(MOTOR_R_IN3, LOW);
-digitalWrite(MOTOR_R_IN4, LOW);
-digitalWrite(MOTOR_L_IN1, LOW);
-digitalWrite(MOTOR_L_IN2, LOW);
+motors.Stop();
   }
 else {
-digitalWrite(MOTOR_R_IN3, HIGH);
-digitalWrite(MOTOR_R_IN4, LOW);
-digitalWrite(MOTOR_L_IN1, HIGH);
-digitalWrite(MOTOR_L_IN2, LOW);
+  
 }
 
 delay(1000);
-
 
 
 }
