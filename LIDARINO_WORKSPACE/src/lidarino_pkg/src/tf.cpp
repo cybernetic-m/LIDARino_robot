@@ -29,6 +29,11 @@ int main(int argc, char** argv){
         tf::StampedTransform(
             tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.0)),
             ros::Time::now(),"map", "lidar_frame"));
+
+    broadcaster.sendTransform(
+        tf::StampedTransform(
+            tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, 0.0, 0.0)),
+            ros::Time::now(),"map", "base_footprint"));
       
     
     r.sleep();
