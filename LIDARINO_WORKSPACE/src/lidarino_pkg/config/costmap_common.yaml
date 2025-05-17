@@ -1,0 +1,6 @@
+footprint: [[-0.15,-0.15], [0.15,-0.15], [0.15,0.15], [-0.15,0.15]]
+inflation_radius: 0.3
+observation_sources: laser
+laser: {topic: scan, sensor_frame: lidar_frame, data_type: LaserScan,
+        marking: true, clearing: true}
+transform_tolerance: 0.2

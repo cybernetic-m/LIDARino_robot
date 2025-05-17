@@ -37,7 +37,8 @@ Canvas canvas;
 Isometry2f lmap_pose;
 ///
 
-ros::Publisher abs_position_pub; 
+ros::Publisher rviz_position_pub; 
+ros::Publisher string_position_pub; 
 ros::Publisher pose_pub;      
 
 unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;  
@@ -127,7 +128,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
   showCanvas(canvas,1);
  
-  /*
+ 
   char m[256];
   std::snprintf(m, sizeof(m),
                 "x=%.6f  y=%.6f  theta=%.6f",
@@ -136,8 +137,10 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   std_msgs::String msg;
   msg.data = m;
 
-  //msg.data = std::to_string(x_world)
-  
+  msg.data = std::to_string(x_world);
+  string_position_pub.publish(msg);
+
+   /*
   geometry_msgs::PolygonStamped  msg;
 
   msg.header.stamp = ros::Time::now();
@@ -180,13 +183,13 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
    
   }
 
-  abs_position_pub.publish(foot);
+  rviz_position_pub.publish(foot);
 
 
   geometry_msgs::TransformStamped t;
-  t.header.stamp        = scan.header.stamp; 
-  t.header.frame_id     = "odom";
-  t.child_frame_id      = "base_link";
+  t.header.stamp        = ros::Time::now(); 
+  t.header.frame_id     = "map";
+  t.child_frame_id      = "odom";
   t.transform.translation.x = x_world;
   t.transform.translation.y = y_world;
   t.transform.translation.z = 0.0;
@@ -214,9 +217,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
 
-    //abs_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
+    string_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
 
-    abs_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
+    rviz_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
     
     //string topic_name=argv[1];
     string topic_name="LiDAR/LD06";
@@ -234,9 +237,10 @@ int main(int argc, char** argv) {
 
     tf_broadcaster =  make_unique<tf2_ros::TransformBroadcaster>();
     pose_pub  = n.advertise<geometry_msgs::PoseStamped>("robot_pose", 10);
-
+    ros::Rate r(10.0);
     while (ros::ok()) {
       ros::spinOnce();
+      r.sleep();
     }
     
    return 0;

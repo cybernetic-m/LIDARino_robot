@@ -23,7 +23,7 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
 
 
 
-int SCAN_FREQ_HZ = 100;
+int SCAN_FREQ_HZ = 10;
 float DT = 0.1f;
 UnicyclePlatform* robot_pointer;
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
-    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
+    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("scan", 1);
     ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
     

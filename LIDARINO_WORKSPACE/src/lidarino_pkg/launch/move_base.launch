@@ -1,0 +1,11 @@
+<!-- lidarino_pkg/launch/move_base.launch -->
+<launch>
+  <!-- load all the costmap / planner parameters -->
+  <rosparam file="$(find lidarino_pkg)/config/costmap_common.yaml"  command="load"/>
+  <rosparam file="$(find lidarino_pkg)/config/global_costmap.yaml"  command="load"/>
+  <rosparam file="$(find lidarino_pkg)/config/local_costmap.yaml"   command="load"/>
+  <rosparam file="$(find lidarino_pkg)/config/base_local_planner.yaml" command="load"/>
+
+  <!-- bring up the navigation stack -->
+  <node pkg="move_base" type="move_base" name="move_base" output="screen"/>
+</launch>
