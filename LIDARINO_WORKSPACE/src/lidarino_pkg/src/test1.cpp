@@ -222,7 +222,7 @@ int main(int argc, char** argv) {
     rviz_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
     
     //string topic_name=argv[1];
-    string topic_name="LiDAR/LD06";
+    string topic_name="scan";
 
     //
     int grid_size = 2*(max_range+expansion_range)/resolution;

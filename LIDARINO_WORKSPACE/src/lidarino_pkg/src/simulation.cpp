@@ -29,7 +29,7 @@ UnicyclePlatform* robot_pointer;
 
 void cmdVelCallback(const geometry_msgs::Twist& cmd){
     robot_pointer->tv =  cmd.linear.x;   
-     robot_pointer->rv =  cmd.angular.z;   
+    robot_pointer->rv =  cmd.angular.z;   
 }
 
 
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("scan", 1);
-    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_sim_vel", 1);
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
     
     const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
 
     world_object.draw(canvas); 
 
-    int ret = showCanvas(canvas, DT*100);   // 1 ms waitKey
+    int ret = showCanvas(canvas, DT*10);   // 1 ms waitKey
 
     if (ret>0)
         cerr << "Key pressed: " << ret << endl;
