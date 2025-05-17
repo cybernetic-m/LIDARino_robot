@@ -25,9 +25,12 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
 
 int SCAN_FREQ_HZ = 100;
 float DT = 0.1f;
+UnicyclePlatform* robot_pointer;
 
-
-
+void cmdVelCallback(const geometry_msgs::Twist& cmd){
+    robot_pointer->tv =  cmd.linear.x;   
+     robot_pointer->rv =  cmd.angular.z;   
+}
 
 
 int main(int argc, char** argv) {
@@ -36,8 +39,8 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
-    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-
+    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("simulated_vel", 1);
+    ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
     
     const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
     const float resolution = 0.1f;
@@ -48,11 +51,15 @@ int main(int argc, char** argv) {
   
   
     World world_object(grid_map);
-    Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2);
+    Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2); //106.9 -49.3 for cappero
+
     Vector2f world_middle = grid_map.grid2world(grid_middle);
+    //cerr << "grid_middle is:" << grid_middle << "world middle is:"<< world_middle << endl ; 
     UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), -0.5));
     robot.radius=0.20;
-  
+
+    robot_pointer=&robot;
+
     LaserScan scan;
     LaserScanner scanner(scan, robot, fromCoefficients(-0.07, 0, -0));
     scanner.radius = 0.05;
@@ -130,8 +137,10 @@ int main(int argc, char** argv) {
    while(ros::ok()){
     world_object.tick(DT);          
     scanner.getScan();  
-    grid_map.draw(canvas);
-    world_object.draw(canvas);       
+    //grid_map.draw(canvas);
+
+    world_object.draw(canvas); 
+
     int ret = showCanvas(canvas, DT*100);   // 1 ms waitKey
 
     if (ret>0)
@@ -163,6 +172,9 @@ int main(int argc, char** argv) {
 
     msg.header.stamp = ros::Time::now();
     std::copy(scan.ranges.begin(), scan.ranges.end(), msg.ranges.begin());
+    
+    
+    ros::spinOnce();
     pub_scan.publish(msg);
 
     geometry_msgs::Twist twist_msg;

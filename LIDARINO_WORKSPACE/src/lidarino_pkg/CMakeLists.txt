@@ -13,7 +13,14 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf 
+  tf2                       
+  tf2_ros                   
+  tf2_geometry_msgs         
 )
+
+
+
+
 
 # Find OpenCV
 find_package(OpenCV REQUIRED)
@@ -134,12 +141,22 @@ add_library(laser_scanner src/laser_scanner.cpp)
 add_library(world_item src/world_item.cpp)
 add_library(draw_helpers src/draw_helpers.cpp)
 
+
+add_library(local_planner SHARED src/local_planner.cpp)
+
+
+
+
 # Link the libraries to the required dependencies
 target_link_libraries(grid_map ${catkin_LIBRARIES})
 target_link_libraries(laser_scan ${catkin_LIBRARIES})
 target_link_libraries(laser_scanner ${catkin_LIBRARIES})
 target_link_libraries(draw_helpers ${catkin_LIBRARIES} ${OpenCV_LIBS})
 target_link_libraries(world_item ${catkin_LIBRARIES} draw_helpers ${OpenCV_LIBS})
+target_link_libraries(local_planner ${catkin_LIBRARIES})
+
+
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -199,6 +216,12 @@ target_link_libraries(odometry_node ${catkin_LIBRARIES} )
 ## Install ##
 #############
 
+
+
+install(TARGETS local_planner
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+install(FILES local_planner_plugin.xml
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
 
