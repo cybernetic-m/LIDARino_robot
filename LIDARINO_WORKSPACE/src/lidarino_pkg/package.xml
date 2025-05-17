@@ -56,8 +56,6 @@
   <build_depend>tf</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tf2_ros</build_depend>
-  <build_depend>pluginlib</build_depend>
-  <build_depend>nav_core</build_depend>
 
  
   
@@ -76,8 +74,6 @@
   <exec_depend>tf</exec_depend>
   <exec_depend>tf2</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>pluginlib</exec_depend>
-  <exec_depend>nav_core</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
