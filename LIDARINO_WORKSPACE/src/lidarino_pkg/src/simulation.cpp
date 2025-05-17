@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
-    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("simulated_vel", 1);
+    ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
     
     const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
     int ranges_num=180;
     sensor_msgs::LaserScan msg;
 
-    msg.header.frame_id   = "laser";
+    msg.header.frame_id   = "lidar_frame";
     
     msg.angle_min        = angle_min;
     msg.angle_max        = angle_max;
