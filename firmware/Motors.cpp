@@ -48,12 +48,12 @@ void Motors::Move(float v, float omega, int time) {
     // Set the PINs boleans values to move in the correct direction
     if (v_L > 0) {
         // Move forward
-        digitalWrite( motor_L_IN1, HIGH);
-        digitalWrite( motor_L_IN2, LOW);
-    } 
-    else if (v_L < 0) {
         digitalWrite( motor_L_IN1, LOW);
         digitalWrite( motor_L_IN2, HIGH);
+    } 
+    else if (v_L < 0) {
+        digitalWrite( motor_L_IN1, HIGH);
+        digitalWrite( motor_L_IN2, LOW);
     }
     else if (v_L == 0) {
         digitalWrite( motor_L_IN1, LOW);
@@ -62,12 +62,12 @@ void Motors::Move(float v, float omega, int time) {
 
     if (v_R > 0) {
         // Move forward
-        digitalWrite( motor_R_IN3, HIGH);
-        digitalWrite( motor_R_IN4, LOW);
+        digitalWrite( motor_R_IN3, LOW);
+        digitalWrite( motor_R_IN4, HIGH );
     } 
     else if (v_R < 0) {
-        digitalWrite( motor_R_IN3, LOW);
-        digitalWrite( motor_R_IN4, HIGH);
+        digitalWrite( motor_R_IN3, HIGH);
+        digitalWrite( motor_R_IN4, LOW);
     }
     else if (v_R == 0) {
         digitalWrite( motor_R_IN3, LOW);

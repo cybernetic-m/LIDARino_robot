@@ -111,11 +111,13 @@ if (currentTime - lastTime >= deltaTime) {
   computeVelocities();
 }
 
-delay(15000);
+delay(1000);
 
-motors.Move(0.25, 0.0, 3000);
+motors.Move(0.3, 0.0, 2000);
 
+delay(1000);
 
+motors.Move(0.0, 2.0, 2000);
 
 
 
