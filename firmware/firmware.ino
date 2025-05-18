@@ -58,9 +58,6 @@ extern volatile unsigned long totalPulses_R; // Total number of pulses
 extern float rps_R; // Round Per Seconds of the right wheel
 extern float v_R; // Linear Velocity of the contact point of the right wheel
 
-// ULTRASOUND VARIABLES
-long cm; // Definition of the centimeters for ultrasound sensor
-
 // Motor definitions
 Motors motors;
 float v_max = 0.4; // our is 0.4 m/s (max velocity reached by your robot)
@@ -85,7 +82,7 @@ pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin as ENA of the L298N Driver
 
 encoderStart();
 
-motors = Motors(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_R_IN3, MOTOR_R_IN4, MOTOR_L_ENA, MOTOR_R_ENB, v_max, L);
+motors = Motors(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_R_IN3, MOTOR_R_IN4, MOTOR_L_ENA, MOTOR_R_ENB, v_max, L, TRIGGER, ECHO);
 
 lastTime = millis(); // Initialize the last time at setup
 
@@ -100,12 +97,6 @@ void loop() {
 // Measure the actual time
 currentTime = millis(); 
 
-// Trigger the ultrasound sensor
-ultrasound_trigger(TRIGGER); 
-
-// Read the echo from the ultrasound sensor
-cm = ultrasound_read(ECHO); 
-
 
 if (currentTime - lastTime >= deltaTime) {
   computeVelocities();
@@ -115,16 +106,9 @@ delay(1000);
 
 motors.Move(0.3, 0.0, 2000);
 
-delay(1000);
-
-motors.Move(0.0, 2.0, 2000);
-
-
 
 // Some print in the serial monitor to check the code working
-Serial.print("Front distance [cm]");
-Serial.print(cm);
-Serial.println();
+
 //Serial.print("L Total Pulses: ");
 //Serial.print(totalPulses_L);
 //Serial.println();
@@ -144,14 +128,6 @@ Serial.print("v_R: ");
 Serial.print(v_R);
 Serial.println();
 
-
-
-if (cm <= 10 && cm != 0) {
-motors.Stop();
-  }
-else {
-  
-}
 
 delay(1000);
 

@@ -2,13 +2,16 @@
 #include <Arduino.h>
 #include <math.h>
 #include "Motors.h"
+#include "firmlib.h"
 
+const int TRIGGER = 4;
+const int ECHO = 5;
 
 // Default constructor (does nothing)
 Motors::Motors() {}
 
 // Constructor to initialize the motor pins
-Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L) {
+Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L, int trigger_pin, int echo_pin) {
     // Constructor to initialize the motor pins
      this->motor_L_IN1 = motor_L_IN1;
      this->motor_L_IN2 = motor_L_IN2;
@@ -18,6 +21,8 @@ Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN
      this->motor_R_ENB = motor_R_ENB;
      this->v_max = v_max;
      this->L = L;
+     this->trigger_pin = trigger_pin;
+     this-> echo_pin = echo_pin;
 
      Stop(); // Initialize motors to stop state
 }
@@ -95,7 +100,26 @@ void Motors::Move(float v, float omega, int time) {
     // Set PWM to 0 at start (Stop state)
     analogWrite( motor_L_ENA, speed_L); 
     analogWrite( motor_R_ENB, speed_R); 
-    delay(time); // Move for the specified time
-    // Stop the motors
-    Stop();
+
+    // Trigger the ultrasound sensor to check for the distance cm
+    // Eventually stop the motors if the distance is less or equal to 10 centimeters
+    while(time > 0){
+
+      
+      ultrasound_trigger(trigger_pin); // Trigger the ultrasound sensor
+
+      long cm = ultrasound_read(echo_pin); // Read the echo from the ultrasound sensor (centimeters)
+
+      if (cm <= 10) {
+        Stop(); // Stop the motors
+      }
+
+      delay(100);
+      time -= 100;   
+
+      // Print each update of cm
+      Serial.print("Front distance [cm]\n");
+      Serial.print(cm);
+      Serial.println();
+    } 
 }

@@ -11,10 +11,11 @@ class Motors {
     // (v_(L/R) / v_max) * 255; 
     float v_max; 
     float L; 
+    int trigger_pin, echo_pin; // needed for the ultrasound sensor check
     public:
     // Constructor to initialize the motor pins
     Motors();
-    Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L);
+    Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L, int trigger_pin, int echo_pin);
 
     void Stop();
 
