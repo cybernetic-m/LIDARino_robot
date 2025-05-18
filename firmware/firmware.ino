@@ -64,7 +64,7 @@ long cm; // Definition of the centimeters for ultrasound sensor
 // Motor definitions
 Motors motors;
 float v_max = 0.4; // our is 0.4 m/s (max velocity reached by your robot)
-float L = 0.135; // Distance between the two wheels (needed to compute v_L and v_R) [in our case 0.135 m]
+float L = 0.215; // Distance between the two wheels (needed to compute v_L and v_R) [in our case 0.135 m]
 
 // Setup 
 void setup() {
