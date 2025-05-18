@@ -1,9 +1,7 @@
 #include <ros/ros.h>
 #include <iostream>
 #include <sensor_msgs/LaserScan.h>
-#include <geometry_msgs/PolygonStamped.h>
-#include <geometry_msgs/Polygon.h>
-#include <geometry_msgs/Point32.h>
+
 #include <dmap.h>
 #include <grid_map.h>
 #include <dmap_localizer.h>
@@ -11,6 +9,15 @@
 
 #include <std_msgs/String.h>
 
+#include <tf2/LinearMath/Quaternion.h>      
+#include <geometry_msgs/PolygonStamped.h>
+#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/Point32.h>
+
+
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/PoseStamped.h>
 
 using namespace std;
 
@@ -30,7 +37,14 @@ Canvas canvas;
 Isometry2f lmap_pose;
 ///
 
-ros::Publisher pos_pub; 
+ros::Publisher rviz_position_pub; 
+ros::Publisher string_position_pub; 
+ros::Publisher pose_pub;      
+
+unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;  
+
+
+
 
 void computeScanEndpoints(std::vector<Vector2f>& dest, const sensor_msgs::LaserScan& scan) {
   dest.clear();
@@ -114,7 +128,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
   showCanvas(canvas,1);
  
-  /*
+ 
   char m[256];
   std::snprintf(m, sizeof(m),
                 "x=%.6f  y=%.6f  theta=%.6f",
@@ -123,8 +137,10 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   std_msgs::String msg;
   msg.data = m;
 
-  //msg.data = std::to_string(x_world)
-  
+  msg.data = std::to_string(x_world);
+  string_position_pub.publish(msg);
+
+   /*
   geometry_msgs::PolygonStamped  msg;
 
   msg.header.stamp = ros::Time::now();
@@ -138,6 +154,12 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
   msg.Polygon = polygon;
   */
+
+
+
+
+
+
 
   geometry_msgs::PolygonStamped foot;
   foot.header.stamp    = ros::Time::now();
@@ -161,8 +183,30 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
    
   }
 
-  pos_pub.publish(foot);
-    
+  rviz_position_pub.publish(foot);
+
+
+  geometry_msgs::TransformStamped t;
+  t.header.stamp        = ros::Time::now(); 
+  t.header.frame_id     = "map";
+  t.child_frame_id      = "odom";
+  t.transform.translation.x = x_world;
+  t.transform.translation.y = y_world;
+  t.transform.translation.z = 0.0;
+  tf2::Quaternion q;   q.setRPY(0, 0, theta);
+  t.transform.rotation.x = q.x();   t.transform.rotation.y = q.y();
+  t.transform.rotation.z = q.z();   t.transform.rotation.w = q.w();
+  tf_broadcaster->sendTransform(t);
+
+
+
+  geometry_msgs::PoseStamped pose;
+  pose.header   = t.header;
+  pose.pose.position.x  = x_world;
+  pose.pose.position.y  = y_world;
+  pose.pose.orientation = t.transform.rotation;
+  pose_pub.publish(pose);
+
 }
 
   
@@ -173,12 +217,12 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
 
-    //pos_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
+    string_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
 
-    pos_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
+    rviz_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
     
     //string topic_name=argv[1];
-    string topic_name="LiDAR/LD06";
+    string topic_name="scan";
 
     //
     int grid_size = 2*(max_range+expansion_range)/resolution;
@@ -191,8 +235,12 @@ int main(int argc, char** argv) {
     lmap_pose.setIdentity();
     ros::Subscriber sub_main = n.subscribe<const sensor_msgs::LaserScan&>(topic_name, 10, laserCallback);
 
+    tf_broadcaster =  make_unique<tf2_ros::TransformBroadcaster>();
+    pose_pub  = n.advertise<geometry_msgs::PoseStamped>("robot_pose", 10);
+    ros::Rate r(10.0);
     while (ros::ok()) {
       ros::spinOnce();
+      r.sleep();
     }
     
    return 0;
