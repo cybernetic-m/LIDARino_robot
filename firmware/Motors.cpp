@@ -81,7 +81,7 @@ void Motors::Move(float v, float omega, int time) {
 
     // Compute the PWM value for the motors
     int speed_L = round((v_L / v_max)* 255);
-    int speed_R = round((v_R / v_max)* 255);
+    int speed_R = round((v_R / v_max)* 253); // We set 253 because we observe a small drift because of the right wheel, calibrate yours!
     
     // Limit the speed maximum to 255 and invert the sign if negative for both wheels
     if (speed_L > 255 || speed_L < -255) {
@@ -114,8 +114,8 @@ void Motors::Move(float v, float omega, int time) {
         Stop(); // Stop the motors
       }
 
-      delay(100);
-      time -= 100;   
+      delay(5);
+      time -= 6;   
 
       // Print each update of cm
       Serial.print("Front distance [cm]\n");
