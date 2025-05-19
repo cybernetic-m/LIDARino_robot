@@ -1,7 +1,8 @@
+
 #include <ros/ros.h>
 #include <iostream>
 #include <sensor_msgs/LaserScan.h>
-#include <algorithm>
+
 #include <dmap.h>
 #include <grid_map.h>
 #include <dmap_localizer.h>
@@ -19,33 +20,29 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#include <nav_msgs/OccupancyGrid.h>
-
-
 using namespace std;
 
 
 DMap dmap(0,0); 
 GridMapping grid_mapping;
-
 DMapLocalizer localizer;
 bool first_scan=true;
 
-
-float resolution, default_resolution = 0.10f;
-GridMap grid_map(default_resolution, 0, 0 );
 int counter=0;
 
-const char* map_yaml_file = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/maps/sim_map.yaml";
-const char* map_file= "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/""LIDARINO_WORKSPACE/src/lidarino_pkg/src/""cappero_laser_odom_diag_2020-05-06-16-26-03.png";
+// parameters of the MAP to be changed for the moment copied pasted
+float resolution=0.05;
+float max_range=10;
+float expansion_range=1;
+Canvas canvas;
+Isometry2f lmap_pose;
+///
 
-                              
-Canvas canvas; 
-ros::Publisher rviz_position_pub;
-ros::Publisher string_position_pub;
-ros::Publisher pose_pub;
-ros::Subscriber laser_scan_sub;
-unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
+ros::Publisher rviz_position_pub; 
+ros::Publisher string_position_pub; 
+ros::Publisher pose_pub;      
+
+unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;  
 
 
 
@@ -61,7 +58,6 @@ void computeScanEndpoints(std::vector<Vector2f>& dest, const sensor_msgs::LaserS
   }
 }
 
-
 void computeGridEndpoints(std::vector<Vector2i>& dest, const std::vector<Vector2f>& src) {
   dest.clear();
   for (const auto &ep: src) {
@@ -73,9 +69,9 @@ void initLocalizer(std::vector<Vector2f>& scan_endpoints) {
     std::vector<Vector2i> grid_endpoints;
     computeGridEndpoints(grid_endpoints, scan_endpoints);
     dmap.clear();
-    int dmax2=pow(1/resolution, 2);
+    int dmax2=pow(expansion_range/resolution, 2);
     int ops=dmap.compute(grid_endpoints, dmax2);
-    //cerr << "refresh n."  << counter++ << endl;
+    cerr << "refresh n."  << counter++ << endl;
     Grid_<float> distances;
     dmap.copyTo(distances);
     for (auto& d: distances.cells) {
@@ -84,10 +80,8 @@ void initLocalizer(std::vector<Vector2f>& scan_endpoints) {
     localizer.setMap(grid_mapping, distances);
 }
 
-
-
 void laserCallback(const sensor_msgs::LaserScan& scan) {
-  grid_map.draw(canvas); 
+  
   std::vector<Vector2f> scan_endpoints;
   computeScanEndpoints(scan_endpoints, scan);
 
@@ -98,9 +92,22 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   } 
 
   else{
+    float angle=scan.angle_min;
     localizer.localize(scan_endpoints,10);
+    float translation_norm=localizer.X.translation().norm();
+    float orientation_norm=fabs(Eigen::Rotation2Df(localizer.X.linear()).angle());
+    //printf("trans %f\n",translation_norm);
+    //printf("orient %f\n", orientation_norm);
+    if (translation_norm>0.1 || orientation_norm>0.5) {
+
+      lmap_pose = lmap_pose*localizer.X;
+      initLocalizer(scan_endpoints);
+    }
   }
 
+
+  localizer.distances.draw(canvas, true); 
+  
   for (const auto& ep: scan_endpoints) {
     drawCircle(canvas, grid_mapping.world2grid(localizer.X*ep), 3, 0);
   }
@@ -123,8 +130,6 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   showCanvas(canvas,1);
  
  
-
-  //msg.data = std::to_string(x_world);
   char m[256];
   std::snprintf(m, sizeof(m),
                 "x=%.6f  y=%.6f  theta=%.6f",
@@ -133,14 +138,9 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
   std_msgs::String msg;
   msg.data = m;
 
+  msg.data = std::to_string(x_world);
   string_position_pub.publish(msg);
 
-  //geometry_msgs::PolygonStamped  msg;
-  //msg.header.stamp = ros::Time::now();
-  //geometry_msgs::Polygon polygon;
-  //geometry_msgs::Point32* square {geometry_msgs::Point32(x_world+0.5,y_world+0.5,0),geometry_msgs::Point32(x_world+0.5,y_world-0.5,0),geometry_msgs::Point32(x_world-0.5,y_world-0.5,0),geometry_msgs::Point32(x_world-0.5,y_world+0.5,0),geometry_msgs::Point32(x_world+0.5,y_world+0.5,0)};
-  //polygon.points = square;
-  //msg.Polygon = polygon;
 
   geometry_msgs::PolygonStamped foot;
   foot.header.stamp    = ros::Time::now();
@@ -197,32 +197,27 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "LIDARINO_LOCALIZINO");
     ros::NodeHandle n;
 
+
     string_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
+
     rviz_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
+    
+    //string topic_name=argv[1];
+    string topic_name="scan";
+
+    //
+    int grid_size = 2*(max_range+expansion_range)/resolution;
+    dmap.resize(grid_size, grid_size);
+    grid_mapping.reset(Vector2f(-grid_size*resolution/2, grid_size*resolution/2), resolution);
+    cerr << "grid_size" << grid_size << endl;
+    cerr << "world center"  << grid_mapping.world2grid(Vector2f(0,0)).transpose() << endl;
+    
+
+    lmap_pose.setIdentity();
+    ros::Subscriber sub_main = n.subscribe<const sensor_msgs::LaserScan&>(topic_name, 10, laserCallback);
+
+    tf_broadcaster =  make_unique<tf2_ros::TransformBroadcaster>();
     pose_pub  = n.advertise<geometry_msgs::PoseStamped>("robot_pose", 10);
-
-    //laser_scan_sub = n.subscribe<const sensor_msgs::LaserScan&>("scan", 10, laserCallback);
-    laser_scan_sub      = n.subscribe("scan",10,laserCallback);
-
-    auto map_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("/map", ros::Duration(5.0));
-    
-
-    resolution = map_msg ? map_msg->info.resolution : default_resolution;
-
-
-    grid_map.loadFromImage(map_file, resolution);
-    Vector2f origin(-grid_map.cols*resolution*0.5f, grid_map.rows*resolution*0.5f);
-    grid_map.reset(origin,resolution);
-    
-    grid_mapping = grid_map;
-    dmap.resize(grid_map.rows,grid_map.cols);
-    grid_map.draw(canvas); 
-    showCanvas(canvas,1);
-    tf_broadcaster = make_unique<tf2_ros::TransformBroadcaster>();
-    
-    //lmap_pose.setIdentity();
-
-
     ros::Rate r(10.0);
     while (ros::ok()) {
       ros::spinOnce();
@@ -230,6 +225,4 @@ int main(int argc, char** argv) {
     }
     
    return 0;
-}   
-
-
+}
