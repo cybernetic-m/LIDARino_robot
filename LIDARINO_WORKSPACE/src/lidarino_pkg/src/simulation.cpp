@@ -8,9 +8,35 @@
 #include <geometry_msgs/Twist.h>          
 #include <geometry_msgs/TwistStamped.h>
 
+
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>  
+#include <tf2/LinearMath/Quaternion.h>
+
+
+
+
 using namespace std;
 
+//map parameters
+const float resolution = 0.1f;
+const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
+
+//World parameters 
+float theta_initial=0;
+float robot_radius=0.20;
+float scanner_radius= 0.05;
+UnicyclePlatform* robot_pointer;
+
+//SIMULATION PARAMETERS
+int SCAN_FREQ_HZ = 10;
+float DT = 0.1f;
+
+
+//SCAN PARAMETERS
+float range_min=0.1,range_max=10, angle_min=-M_PI/2,angle_max=M_PI/2;
+int ranges_num=180;
 
 
 Isometry2f fromCoefficients(float tx, float ty, float alpha) {
@@ -21,11 +47,6 @@ Isometry2f fromCoefficients(float tx, float ty, float alpha) {
     return iso;
 }
 
-
-
-int SCAN_FREQ_HZ = 10;
-float DT = 0.1f;
-UnicyclePlatform* robot_pointer;
 
 void cmdVelCallback(const geometry_msgs::Twist& cmd){
     robot_pointer->tv =  cmd.linear.x;   
@@ -38,41 +59,37 @@ int main(int argc, char** argv) {
 
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
+
+    ros::Publisher pub_initial_pose =n.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose",1,true);
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("scan", 1);
     ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_sim_vel", 1);
+
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
     
-    const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
-    const float resolution = 0.1f;
-
-
-    GridMap grid_map(resolution,0, 0 );
+    GridMap grid_map(resolution, 0, 0 );
     grid_map.loadFromImage(filename, resolution);
-  
-  
+
+    
     World world_object(grid_map);
     Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2); //106.9 -49.3 for cappero
-
     Vector2f world_middle = grid_map.grid2world(grid_middle);
-    //cerr << "grid_middle is:" << grid_middle << "world middle is:"<< world_middle << endl ; 
-    UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), -0.5));
-    robot.radius=0.20;
+    cerr << "grid_middle is:" << grid_middle << "world middle is:"<< world_middle << endl ; 
 
+    UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), theta_initial));
+    robot.radius=robot_radius;
     robot_pointer=&robot;
 
     LaserScan scan;
     LaserScanner scanner(scan, robot, fromCoefficients(-0.07, 0, -0));
-    scanner.radius = 0.05;
+    scanner.radius = scanner_radius;
   
-
 
     /*
 
     GridMap grid_map(resolution, 0, 0);
     grid_map.loadFromImage(filename, resolution);
     Eigen::Vector2f center = grid_map.grid2world(grid_map.origin());
-    
-    
+
     cerr << "center: " << center.transpose() << endl;
     cerr << "origin: " << grid_map.origin().transpose() << endl;
 
@@ -110,15 +127,25 @@ int main(int argc, char** argv) {
     //...................................................................
     
 
-
     */
-    
-    float range_min=0.1,range_max=10, angle_min=-M_PI/2,angle_max=M_PI/2;
-    int ranges_num=180;
+
+    geometry_msgs::PoseWithCovarianceStamped init_position;
+    init_position.header.frame_id = "/map";
+    init_position.pose.pose.position.x = world_middle.x();
+    init_position.pose.pose.position.y = world_middle.y();
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, theta_initial); 
+    init_position.pose.pose.orientation = tf2::toMsg(q);
+    init_position.pose.covariance[0]  = 0.25;    
+    init_position.pose.covariance[7]  = 0.25;    
+    init_position.pose.covariance[35] = 0.17; 
+    pub_initial_pose.publish(init_position);
+
+
     sensor_msgs::LaserScan msg;
 
     msg.header.frame_id   = "lidar_frame";
-    
+
     msg.angle_min        = angle_min;
     msg.angle_max        = angle_max;
     msg.angle_increment  = (angle_max - angle_min) / ranges_num;
@@ -127,12 +154,11 @@ int main(int argc, char** argv) {
     msg.time_increment   = 1.0f / (SCAN_FREQ_HZ * ranges_num);
 
     msg.ranges.resize(ranges_num);
-
-
-   
    
    Canvas canvas;
    ros::Rate rate(SCAN_FREQ_HZ);
+
+
    //while (true) { // if intrested only in the simulation 
    while(ros::ok()){
     world_object.tick(DT);          

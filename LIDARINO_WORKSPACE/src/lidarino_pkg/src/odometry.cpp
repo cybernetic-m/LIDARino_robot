@@ -21,8 +21,8 @@ int main(int argc, char** argv){
   ros::Subscriber cmd_vel = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, VelocitiesCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
-  double x = 0.0;
-  double y = 0.0;
+  double x = 106.9*10;  
+  double y = -49.3*10;
   double th = 0.0;
 
 
