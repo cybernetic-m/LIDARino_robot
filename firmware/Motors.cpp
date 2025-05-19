@@ -86,11 +86,17 @@ void Motors::Move(float v, float omega) {
     if (speed_L > 255 || speed_L < -255) {
         speed_L = 255;
     }
+    if (speed_L < 128 && speed_L > -128) {
+        speed_L = 128;
+    }
     else if (speed_L < 0) {
         speed_L = -speed_L;
     }
-    if (speed_R > 255 || speed_R < -255) {
-        speed_R = 255;
+    if (speed_R > 253 || speed_R < -253) {
+        speed_R = 253;
+    }
+    if (speed_R < 127 && speed_R > -127) {
+        speed_R = 127;
     }
     else if (speed_R < 0) {
         speed_R = -speed_R;

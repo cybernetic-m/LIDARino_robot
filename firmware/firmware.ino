@@ -67,22 +67,19 @@ extern float v_R; // Linear Velocity of the contact point of the right wheel
 Motors motors;
 float v_max = 0.4; // our is 0.4 m/s (max velocity reached by your robot)
 float L = 0.215; // Distance between the two wheels (needed to compute v_L and v_R) [in our case 0.135 m]
-float v = 0.0 ;
-float omega = 0.0;
 
 // ROS-RASPBERRY VARIABLES
 // v and omega that will be received by Raspberry Pi that publishes the cmd_vel topic
 // vectors of chars to save as a string the v and omega to print in "serial_monitor", and serial_data that is the entire message
 // serial_msg will be publish in a topic called "serial_monitor" to print
-char v_str[10];  
-char omega_str[10];  
-char serial_data[50]; 
-std_msgs::String serial_msg; 
+extern float v;
+extern float omega;
+extern std_msgs::String serial_msg; 
 
 // Create a subscriber to the cmd_vel topic to read v and omega
 // Create a publisher to "serial_monitor" topic to print v and omega
 // Create a NodeHandle: the interface that links the Arduino to ROS nodes (you can see its functions in the setup())
-ros::Publisher serial_publisher("serial_monitor", &serial_msg);
+extern ros::Publisher serial_publisher;
 ros::NodeHandle nh; 
 ros::Subscriber<geometry_msgs::Twist> arduino_sub("cmd_vel", &velocitiesCallback); 
 
@@ -129,8 +126,8 @@ currentTime = millis();
 
 // Trigger the ultrasound sensor to check for the distance cm
 // Eventually stop the motors if the distance is less or equal to 10 centimeters
-ultrasound_trigger(trigger_pin); // Trigger the ultrasound sensor
-long cm = ultrasound_read(echo_pin); // Read the echo from the ultrasound sensor (centimeters)
+ultrasound_trigger(TRIGGER); // Trigger the ultrasound sensor
+long cm = ultrasound_read(ECHO); // Read the echo from the ultrasound sensor (centimeters)
 if (cm <= 10) {
   motors.Stop(); // Stop the motors if the distance is less than 10 cm
 }

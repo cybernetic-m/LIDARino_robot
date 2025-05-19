@@ -1,4 +1,16 @@
 #include "firmlib.h"
+#include <std_msgs/String.h>
+#include <ros.h>
+
+float v = 0.0 ;
+float omega = 0.0;
+char v_str[10];  
+char omega_str[10];  
+char serial_data[50];
+std_msgs::String serial_msg; 
+ros::Publisher serial_publisher("serial_monitor", &serial_msg);
+
+
 
 void velocitiesCallback(const geometry_msgs::Twist &velocities) {
     // Read the linear and angular velocity
