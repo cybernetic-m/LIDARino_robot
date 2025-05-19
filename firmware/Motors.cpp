@@ -11,7 +11,7 @@ const int ECHO = 5;
 Motors::Motors() {}
 
 // Constructor to initialize the motor pins
-Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L, int trigger_pin, int echo_pin) {
+Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L) {
     // Constructor to initialize the motor pins
      this->motor_L_IN1 = motor_L_IN1;
      this->motor_L_IN2 = motor_L_IN2;
@@ -21,8 +21,7 @@ Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN
      this->motor_R_ENB = motor_R_ENB;
      this->v_max = v_max;
      this->L = L;
-     this->trigger_pin = trigger_pin;
-     this-> echo_pin = echo_pin;
+
 
      Stop(); // Initialize motors to stop state
 }
@@ -40,7 +39,7 @@ void Motors::Stop() {
 
 }
 
-void Motors::Move(float v, float omega, int time) {
+void Motors::Move(float v, float omega) {
     
     // Compute v_L and v_R from v and omega from unicycle model formulas
     // Inverse formulas of these:
@@ -101,25 +100,4 @@ void Motors::Move(float v, float omega, int time) {
     analogWrite( motor_L_ENA, speed_L); 
     analogWrite( motor_R_ENB, speed_R); 
 
-    // Trigger the ultrasound sensor to check for the distance cm
-    // Eventually stop the motors if the distance is less or equal to 10 centimeters
-    while(time > 0){
-
-      
-      ultrasound_trigger(trigger_pin); // Trigger the ultrasound sensor
-
-      long cm = ultrasound_read(echo_pin); // Read the echo from the ultrasound sensor (centimeters)
-
-      if (cm <= 10) {
-        Stop(); // Stop the motors
-      }
-
-      delay(5);
-      time -= 6;   
-
-      // Print each update of cm
-      Serial.print("Front distance [cm]\n");
-      Serial.print(cm);
-      Serial.println();
-    } 
 }

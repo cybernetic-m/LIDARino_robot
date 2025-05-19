@@ -108,7 +108,7 @@ pinMode(MOTOR_R_ENB, OUTPUT); // Set the Digital Pin as ENA of the L298N Driver
 encoderStart(); // Initialize the start time of both encoders
 
 // Constructor of the Motors class
-motors = Motors(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_R_IN3, MOTOR_R_IN4, MOTOR_L_ENA, MOTOR_R_ENB, v_max, L, TRIGGER, ECHO);
+motors = Motors(MOTOR_L_IN1, MOTOR_L_IN2, MOTOR_R_IN3, MOTOR_R_IN4, MOTOR_L_ENA, MOTOR_R_ENB, v_max, L);
 
 // Initialize NodeHandle, the Subscriber Node and the Publisher Node
 nh.initNode(); 
@@ -127,6 +127,13 @@ void loop() {
 // Measure the actual time
 currentTime = millis(); 
 
+// Trigger the ultrasound sensor to check for the distance cm
+// Eventually stop the motors if the distance is less or equal to 10 centimeters
+ultrasound_trigger(trigger_pin); // Trigger the ultrasound sensor
+long cm = ultrasound_read(echo_pin); // Read the echo from the ultrasound sensor (centimeters)
+if (cm <= 10) {
+  motors.Stop(); // Stop the motors if the distance is less than 10 cm
+}
 
 if (currentTime - lastTime >= deltaTime) {
   computeVelocities();
@@ -136,16 +143,15 @@ if (currentTime - lastTime >= deltaTime) {
 nh.spinOnce(); // Poll v, omega and publish the serial_msg topic
 delay(50); // Small delay to avoid overloading the CPU
 
-motors.Move(v, omega, 2000);
+motors.Move(v, omega);
 
-// Some print in the serial monitor to check the code working
-
-//Serial.print("L Total Pulses: ");
-//Serial.print(totalPulses_L);
-//Serial.println();
-//Serial.print("R Total Pulses: ");
-//Serial.print(totalPulses_R);
-//Serial.println();
+/*
+Serial.print("L Total Pulses: ");
+Serial.print(totalPulses_L);
+Serial.println();
+Serial.print("R Total Pulses: ");
+Serial.print(totalPulses_R);
+Serial.println();
 Serial.print("RPS L: ");
 Serial.print(rps_L);
 Serial.println();
@@ -158,4 +164,8 @@ Serial.println();
 Serial.print("v_R: ");
 Serial.print(v_R);
 Serial.println();
+Serial.print("Front distance [cm]\n");
+Serial.print(cm);
+Serial.println();
+*/
 }
