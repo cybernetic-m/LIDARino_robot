@@ -30,24 +30,24 @@ void encoderStart() {
 
 void encoderInterrupt_L() {
   
-  interruptCurrentTime_L = millis(); // Get the current time
-  interruptBetweenTime_L = (interruptCurrentTime_L - interruptLastTime_L); // (s)
+  //interruptCurrentTime_L = millis(); // Get the current time
+  //interruptBetweenTime_L = (interruptCurrentTime_L - interruptLastTime_L); // (s)
   
-  if(interruptBetweenTime_L > 6) {
-    interruptLastTime_L = interruptCurrentTime_L; // Update the last time
+  //if(interruptBetweenTime_L > 7) {
+    //interruptLastTime_L = interruptCurrentTime_L; // Update the last time
     totalPulses_L++; // Increment the total number of pulses
-  }
+  //}
 }
 
 void encoderInterrupt_R() {
   
-  interruptCurrentTime_R = millis(); // Get the current time
-  interruptBetweenTime_R = (interruptCurrentTime_R - interruptLastTime_R); // (s)
+  //interruptCurrentTime_R = millis(); // Get the current time
+  //interruptBetweenTime_R = (interruptCurrentTime_R - interruptLastTime_R); // (s)
 
-  if(interruptBetweenTime_R > 6) {
-    interruptLastTime_R = interruptCurrentTime_R; // Update the last time
+  //if(interruptBetweenTime_R > 7) {
+    //interruptLastTime_R = interruptCurrentTime_R; // Update the last time
     totalPulses_R++; // Increment the total number of pulses
-  }
+  //}
 }
 
 void computeVelocities(){
