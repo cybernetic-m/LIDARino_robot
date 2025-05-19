@@ -25,6 +25,8 @@
  
 */
 
+#define nullptr NULL // Needed to use Arduino IDE on Raspberry Pi
+
 #include "firmlib.h"
 #include "Motors.h"
 

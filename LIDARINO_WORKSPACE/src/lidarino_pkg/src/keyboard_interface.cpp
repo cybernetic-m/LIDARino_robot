@@ -11,8 +11,6 @@ The robot can be controlled using the following keys:
 'o' for increase angular speed, 'k' for decrease angular speed
 */
 
-
-
 int main(int argc, char **argv) {
     ros::init(argc, argv, "keyboard_interface"); // Initialize the ROS node
 
