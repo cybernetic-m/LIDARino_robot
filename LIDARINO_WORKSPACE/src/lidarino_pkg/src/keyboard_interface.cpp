@@ -47,6 +47,8 @@ char getKey() {
     // Return the character read
     return ch; 
 
+}
+
 int main(int argc, char **argv) {
     ros::init(argc, argv, "keyboard_interface"); // Initialize the ROS node
 
