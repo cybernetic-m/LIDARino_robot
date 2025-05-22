@@ -191,6 +191,10 @@ add_dependencies(tf_node
 add_executable(odometry_node src/odometry.cpp )
 target_link_libraries(odometry_node ${catkin_LIBRARIES} ) 
 
+
+add_executable(keyboard_interface src/keyboard_interface.cpp)
+target_link_libraries(keyboard_interface  ${catkin_LIBRARIES} ) 
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
