@@ -16,15 +16,15 @@
       name="base_to_lidar_broadcaster"
       args="0 0 0 0 0 0 base_footprint lidar_frame 10"/>
       
-  <node pkg="lidarino_pkg" type="localization_node"      name="localizer_node"/> 
- 
+
+  <!-- Localisation  (pick ONE) -->
+  <!--   <node pkg="lidarino_pkg" type="localization_node"      name="localizer_node"/>  -->
+  <node pkg="amcl"     type="amcl"         name="amcl"/>
   <!-- Map server (static map the simulator already uses) -->
   <node pkg="map_server" type="map_server"
         args="$(find lidarino_pkg)/maps/sim_map.yaml"
         name="map"/>
 
-  <node pkg="rviz" type="rviz"      name="rviz_"
-  args="-d $(find lidarino_pkg)/rviz/rviz_map_and_robot.rviz"
-  />     
-
+  <!-- move_base with vanilla planners -->
+  <include file="$(find lidarino_pkg)/launch/move_base.launch"/>
 </launch>
