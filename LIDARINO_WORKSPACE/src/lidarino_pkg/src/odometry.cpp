@@ -3,10 +3,17 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 
+using namespace std; 
+
+
 double vl = 0.0;
 double vr = 0.0;
 
-using namespace std; 
+
+
+bool new_map=false;
+
+
 
 void VelocitiesCallback(geometry_msgs::Twist velocities){
     vl = velocities.linear.x;
@@ -14,6 +21,28 @@ void VelocitiesCallback(geometry_msgs::Twist velocities){
 }
 
 int main(int argc, char** argv){
+
+
+  double origin[3];
+  float resolution;
+
+  if (! new_map){
+  origin[0] = 106.9;
+  origin[1] = -49.35;
+  origin[2] = 0.0;
+  resolution=0.1f;
+  }
+
+  else{
+    origin[0] = -51.200024;
+    origin[1] = -51.200024; 
+    origin[2] = 0.00;
+    resolution  = 0.05f;
+  }
+  
+  float inv_res= 1/resolution;
+
+  
   ros::init(argc, argv, "odometry_publisher");
 
   ros::NodeHandle n;
@@ -21,8 +50,8 @@ int main(int argc, char** argv){
   ros::Subscriber cmd_vel = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, VelocitiesCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
-  double x = 106.9*10;  
-  double y = -49.3*10;
+  double x = origin[0]*inv_res;  
+  double y = origin[1]*inv_res;
   double th = 0.0;
 
 

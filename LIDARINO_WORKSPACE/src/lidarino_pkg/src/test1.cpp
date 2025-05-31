@@ -32,14 +32,23 @@ DMapLocalizer localizer;
 bool localizer_initialized=false;
 
 
-float resolution, default_resolution = 0.10f;
-GridMap grid_map(default_resolution, 0, 0 );
-int counter=0;
+float resolution; 
+float default_resolution = 0.10f;
+//float default_resolution= 0.05f;
+
+
 
 const char* map_yaml_file = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/maps/sim_map.yaml";
 const char* map_file= "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/""LIDARINO_WORKSPACE/src/lidarino_pkg/src/""cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
                               
+//const char* map_yaml_file= "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/maps/map.yml";
+//const char* map_file =  "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/map.pgm";
+
+GridMap grid_map(default_resolution, 0, 0 );
+int counter=0;
+
+
 Canvas canvas; 
 ros::Publisher rviz_position_pub;
 ros::Publisher string_position_pub;

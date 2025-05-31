@@ -22,6 +22,10 @@ using namespace std;
 const float resolution = 0.1f;
 const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
+//const float resolution = 0.05f;
+//const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/map.pgm";
+
+
 
 //World parameters 
 float theta_initial=0;
@@ -84,14 +88,13 @@ int main(int argc, char** argv) {
     scanner.radius = scanner_radius;
   
 
-    /*
 
-    GridMap grid_map(resolution, 0, 0);
-    grid_map.loadFromImage(filename, resolution);
-    Eigen::Vector2f center = grid_map.grid2world(grid_map.origin());
+    //GridMap grid_map(resolution, 0, 0);
+    //grid_map.loadFromImage(filename, resolution);
+    //Eigen::Vector2f center = grid_map.grid2world(grid_map.origin());
 
-    cerr << "center: " << center.transpose() << endl;
-    cerr << "origin: " << grid_map.origin().transpose() << endl;
+    //cerr << "center: " << center.transpose() << endl;
+    //cerr << "origin: " << grid_map.origin().transpose() << endl;
 
 
     //grid_map.draw(canvas);
@@ -99,35 +102,33 @@ int main(int argc, char** argv) {
 
     // world object definition
 
-    WorldItem* items[3];
-    memset(items, 0, sizeof(WorldItem*) * 3);
+    //WorldItem* items[3];
+    //memset(items, 0, sizeof(WorldItem*) * 3);
 
-    World world_object(grid_map);
-    items[0] = &world_object;
-
-
-
-    Eigen::Isometry2f robot_in_world = Eigen::Isometry2f::Identity();
-    robot_in_world.translation() << 5, 0;
-    UnicyclePlatform robot(world_object, robot_in_world);
-    robot.radius = 1;
-    robot.tv = 0;
-    robot.rv = 0;
-    items[1] = &robot;
+    //World world_object(grid_map);
+    //items[0] = &world_object;
 
 
-    LaserScan scan(range_min, range_max, angle_min,angle_max, ranges_num);
-    Isometry2f scanner_in_robot = Eigen::Isometry2f::Identity();
-    scanner_in_robot.translation().x() = 0.f;       
-    LaserScanner scanner(scan, robot, scanner_in_robot, SCAN_FREQ_HZ);
-    scanner.radius = 0.5f;
-    items[2] = &scanner;
+
+    //Eigen::Isometry2f robot_in_world = Eigen::Isometry2f::Identity();
+    //robot_in_world.translation() << 5, 0;
+    //UnicyclePlatform robot(world_object, robot_in_world);
+    //robot.radius = 1;
+    //robot.tv = 0;
+    //robot.rv = 0;
+    //items[1] = &robot;
+
+
+    //LaserScan scan(range_min, range_max, angle_min,angle_max, ranges_num);
+    //Isometry2f scanner_in_robot = Eigen::Isometry2f::Identity();
+    //scanner_in_robot.translation().x() = 0.f;       
+    //LaserScanner scanner(scan, robot, scanner_in_robot, SCAN_FREQ_HZ);
+    //scanner.radius = 0.5f;
+    //items[2] = &scanner;
 
     
     //...................................................................
     
-
-    */
 
     geometry_msgs::PoseWithCovarianceStamped init_position;
     init_position.header.frame_id = "/map";
