@@ -136,7 +136,9 @@ struct Grid_{
         lower=std::min(lower, v);
         upper=std::max(upper, v);
       }
-      scale=255.f / (upper-lower);
+      if (upper > lower) {  
+        scale=255.f / (upper-lower);
+      }    
     }
 
     dest = cv::Mat(rows, cols, CV_8UC1);

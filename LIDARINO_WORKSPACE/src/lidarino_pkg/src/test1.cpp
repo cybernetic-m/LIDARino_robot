@@ -21,6 +21,7 @@
 
 #include <nav_msgs/OccupancyGrid.h>
 
+#include "map_config.h"
 
 using namespace std;
 
@@ -30,20 +31,16 @@ GridMapping grid_mapping;
 
 DMapLocalizer localizer;
 bool localizer_initialized=false;
-
-
 float resolution; 
-float default_resolution = 0.10f;
-//float default_resolution= 0.05f;
 
 
 
-const char* map_yaml_file = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/maps/sim_map.yaml";
-const char* map_file= "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/""LIDARINO_WORKSPACE/src/lidarino_pkg/src/""cappero_laser_odom_diag_2020-05-06-16-26-03.png";
+string base_path = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/";
+string map_yaml_path = base_path + "maps/map.yml";
+string map_folder = base_path + "src/";
+//float default_resolution = 0.10f;
+float default_resolution= 0.05f;
 
-                              
-//const char* map_yaml_file= "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/maps/map.yml";
-//const char* map_file =  "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/map.pgm";
 
 GridMap grid_map(default_resolution, 0, 0 );
 int counter=0;
@@ -124,8 +121,8 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
     drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front_dir), 128);  // 128 grey
 
-    showCanvas(canvas,1);
-    
+    //showCanvas(canvas,1);
+    showScaledCanvas(canvas, 0.4f, 1);
     
 
     //msg.data = std::to_string(x_world);
@@ -209,28 +206,30 @@ int main(int argc, char** argv) {
     laser_scan_sub      = n.subscribe("scan",10,laserCallback);
 
     auto map_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("/map", ros::Duration(5.0));
-    
 
-    resolution = map_msg ? map_msg->info.resolution : default_resolution;
+    MapConfig map_config; 
 
+    if (!map_config.loadMapParameters(map_yaml_path)) {
+        cerr << "Using default map parameters" << endl;
+    }
 
-    grid_map.loadFromImage(map_file, resolution);
-    Vector2f origin(-grid_map.cols*resolution*0.5f, grid_map.rows*resolution*0.5f);
-    grid_map.reset(origin,resolution);
-    
+    string full_map_path = map_folder + map_config.image_file;
+
+    grid_map.loadFromImage(full_map_path.c_str(), map_config.resolution);
+    grid_map.reset(map_config.origin, map_config.resolution);
+
     grid_mapping = grid_map;
-
 
     cerr << "Map loaded successfully:" << endl;
     cerr << "  Dimensions: " << grid_map.rows << "x" << grid_map.cols << endl;
-    cerr << "  Resolution: " << resolution << endl;
-    cerr << "  Origin: " << origin << endl;
-    cerr << "  Center: " << grid_map.center() << endl;
+    cerr << "  Resolution: " << map_config.resolution << endl; 
+    cerr << "  Origin: [" << map_config.origin.x() << ", " << map_config.origin.y() << "]" << endl; 
+    cerr << "  Center: [" << grid_map.center().x() << ", " << grid_map.center().y() << "]" << endl;
 
-
+    
     grid_map.draw(canvas); 
-    showCanvas(canvas,1);
-
+    //showCanvas(canvas,1);
+    showScaledCanvas(canvas, 0.4f, 1);
     tf_broadcaster = make_unique<tf2_ros::TransformBroadcaster>();
     
     //lmap_pose.setIdentity();
