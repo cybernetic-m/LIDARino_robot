@@ -20,7 +20,6 @@
 #include <geometry_msgs/PoseStamped.h>
 
 #include <nav_msgs/OccupancyGrid.h>
-
 #include "map_config.h"
 
 using namespace std;
@@ -31,14 +30,19 @@ GridMapping grid_mapping;
 
 DMapLocalizer localizer;
 bool localizer_initialized=false;
-float resolution; 
 
+
+float resolution; 
+//float default_resolution = 0.10f;
+float default_resolution= 0.05f;
+
+                    
 
 string base_path = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/";
 string map_yaml_path = base_path + "maps/map.yml";
-string map_folder = base_path + "src/";
-//float default_resolution = 0.10f;
-float default_resolution= 0.05f;
+//string map_yaml_path = base_path + "maps/sim_map.yaml";
+string map_file_path = base_path + "maps/map.pgm";
+//string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
 
 GridMap grid_map(default_resolution, 0, 0 );
@@ -48,6 +52,7 @@ int counter=0;
 Canvas canvas; 
 int canvas_mode = 3; // 1=original, 2=scaled, 3=cropped+scaled 
 float crop_width = 200, crop_height=200, scale=3;
+
 
 ros::Publisher rviz_position_pub;
 ros::Publisher string_position_pub;
@@ -68,6 +73,7 @@ void computeScanEndpoints(std::vector<Vector2f>& dest, const sensor_msgs::LaserS
     dest.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
   }
 }
+
 
 
 void initLocalizer() {
@@ -117,14 +123,16 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
     drawCircle(canvas, rob_in_gd, 2.5, 0);
 
-    Eigen::Vector2f front_dir = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.5f, 0.f);
+    Eigen::Vector2f front_dir = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.25f, 0.f);
 
 
     drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front_dir), 128);  // 128 grey
 
+
     //showCanvas(canvas,1);
-    //showScaledCanvas(canvas, 0.6f, 1);
+    //showScaledCanvas(canvas, 0.4f, 1);
     showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, 1);
+    
     
 
     //msg.data = std::to_string(x_world);
@@ -152,7 +160,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
                         
     Eigen::Rotation2Df R(theta);                  
 
-    array<Eigen::Vector2f,4> corners_square = {{{-0.5f, -0.5f},{ 0.5f, -0.5f},{ 0.5f,  0.5f},  {-0.5f,  0.5f} }};
+    array<Eigen::Vector2f,4> corners_square = {{{-0.1f, -0.1f},{ 0.1f, -0.1f},{ 0.1f,  0.1f},  {-0.1f,  0.1f} }};
 
 
     foot.polygon.points.reserve(4);
@@ -208,31 +216,32 @@ int main(int argc, char** argv) {
     laser_scan_sub      = n.subscribe("scan",10,laserCallback);
 
     auto map_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("/map", ros::Duration(5.0));
+    
 
-    MapConfig map_config; 
+    resolution = map_msg ? map_msg->info.resolution : default_resolution;
 
-    if (!map_config.loadMapParameters(map_yaml_path)) {
-        cerr << "Using default map parameters" << endl;
-    }
 
-    string full_map_path = map_folder + map_config.image_file;
-
-    grid_map.loadFromImage(full_map_path.c_str(), map_config.resolution);
-    grid_map.reset(map_config.origin, map_config.resolution);
-
+    grid_map.loadFromImage(map_file_path.c_str(), resolution);
+    Vector2f origin(-grid_map.cols*resolution*0.5f, grid_map.rows*resolution*0.5f);
+    grid_map.reset(origin,resolution);
+    
     grid_mapping = grid_map;
+
 
     cerr << "Map loaded successfully:" << endl;
     cerr << "  Dimensions: " << grid_map.rows << "x" << grid_map.cols << endl;
-    cerr << "  Resolution: " << map_config.resolution << endl; 
-    cerr << "  Origin: [" << map_config.origin.x() << ", " << map_config.origin.y() << "]" << endl; 
-    cerr << "  Center: [" << grid_map.center().x() << ", " << grid_map.center().y() << "]" << endl;
+    cerr << "  Resolution: " << resolution << endl;
+    cerr << "  Origin: " << origin << endl;
+    cerr << "  Center: " << grid_map.center() << endl;
 
-    
+
     grid_map.draw(canvas); 
+
     //showCanvas(canvas,1);
     //showScaledCanvas(canvas, 0.4f, 1);
     showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, 1);
+
+
 
     tf_broadcaster = make_unique<tf2_ros::TransformBroadcaster>();
     
@@ -247,5 +256,4 @@ int main(int argc, char** argv) {
     }
     
    return 0;
-}   
-
+}

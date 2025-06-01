@@ -12,7 +12,7 @@ struct MapConfig {
     float resolution;
     Eigen::Vector2f origin;
     
-    MapConfig() : image_file("map.pgm"), resolution(0.05f), origin(-51.2f,-51.2f){}
+    MapConfig() : image_file("map.pgm"), resolution(0.05f), origin(-51.200024,-51.200024){}
     
     bool loadMapParameters(const std::string& map_yaml_path) {
         ifstream file(map_yaml_path);

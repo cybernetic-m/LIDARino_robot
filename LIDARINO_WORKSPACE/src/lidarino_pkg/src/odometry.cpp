@@ -2,8 +2,8 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
-#include "map_config.h"
 
+#include "map_config.h"
 
 using namespace std; 
 
@@ -12,8 +12,11 @@ double vl = 0.0;
 double vr = 0.0;
 
 
+
+bool new_map=true;
 string base_path = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/";
 string map_yaml_path = base_path + "maps/map.yml";
+//string map_yaml_path = base_path + "maps/sim_map.yaml";
 
 
 void VelocitiesCallback(geometry_msgs::Twist velocities){
@@ -22,11 +25,23 @@ void VelocitiesCallback(geometry_msgs::Twist velocities){
 }
 
 int main(int argc, char** argv){
-
-
   double origin[3];
   float resolution;
+  /*
+  if (! new_map){
+  origin[0] = 106.9;
+  origin[1] = -49.35;
+  origin[2] = 0.0;
+  resolution=0.1f;
+  }
 
+  else{
+    origin[0] = -51.200024;
+    origin[1] = -51.200024; 
+    origin[2] = 0.00;
+    resolution  = 0.05f;
+  }
+  */
 
   MapConfig map_config;
   if (!map_config.loadMapParameters(map_yaml_path)) {
@@ -37,8 +52,7 @@ int main(int argc, char** argv){
   origin[1] = map_config.origin.y();
   origin[2] = 0.0;
   resolution = map_config.resolution;
-
-
+  
   float inv_res= 1/resolution;
 
   
