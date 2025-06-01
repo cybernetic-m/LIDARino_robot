@@ -34,7 +34,6 @@ bool localizer_initialized=false;
 float resolution; 
 
 
-
 string base_path = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/";
 string map_yaml_path = base_path + "maps/map.yml";
 string map_folder = base_path + "src/";
@@ -47,6 +46,9 @@ int counter=0;
 
 
 Canvas canvas; 
+int canvas_mode = 3; // 1=original, 2=scaled, 3=cropped+scaled 
+float crop_width = 200, crop_height=200, scale=3;
+
 ros::Publisher rviz_position_pub;
 ros::Publisher string_position_pub;
 ros::Publisher pose_pub;
@@ -66,7 +68,6 @@ void computeScanEndpoints(std::vector<Vector2f>& dest, const sensor_msgs::LaserS
     dest.push_back(Vector2f(r*cos(alpha), r*sin(alpha)));
   }
 }
-
 
 
 void initLocalizer() {
@@ -114,7 +115,7 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
     double y_world= rob_in_wd.y(); 
     float theta = Eigen::Rotation2Df( localizer.X.linear() ).angle();
 
-    drawCircle(canvas, rob_in_gd, 10, 0);
+    drawCircle(canvas, rob_in_gd, 2.5, 0);
 
     Eigen::Vector2f front_dir = rob_in_wd + localizer.X.linear() * Eigen::Vector2f(0.5f, 0.f);
 
@@ -122,7 +123,8 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
     drawLine(canvas, rob_in_gd, grid_mapping.world2grid(front_dir), 128);  // 128 grey
 
     //showCanvas(canvas,1);
-    showScaledCanvas(canvas, 0.4f, 1);
+    //showScaledCanvas(canvas, 0.6f, 1);
+    showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, 1);
     
 
     //msg.data = std::to_string(x_world);
@@ -229,7 +231,9 @@ int main(int argc, char** argv) {
     
     grid_map.draw(canvas); 
     //showCanvas(canvas,1);
-    showScaledCanvas(canvas, 0.4f, 1);
+    //showScaledCanvas(canvas, 0.4f, 1);
+    showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, 1);
+
     tf_broadcaster = make_unique<tf2_ros::TransformBroadcaster>();
     
     //lmap_pose.setIdentity();

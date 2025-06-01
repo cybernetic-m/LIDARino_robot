@@ -43,14 +43,8 @@ int ranges_num=180;
 
 
 //New Canvas Parameters
-
-//CanvasMode display_mode = CanvasMode::FITTED;
-//float scale_factor = 0.3f;
-//int max_display_width = 1200;
-//int max_display_height = 800;
-//int crop_width = 600;
-//int crop_height = 400;
-
+int canvas_mode = 3;  // 1=original, 2=scaled, 3=cropped+scaled
+float crop_width = 200, crop_height=200, scale=3;
 
 
 Isometry2f fromCoefficients(float tx, float ty, float alpha) {
@@ -192,8 +186,9 @@ int main(int argc, char** argv) {
     world_object.draw(canvas); 
 
     //int ret = showCanvas(canvas, DT*10);   // 1 ms waitKey
-    int ret = showScaledCanvas(canvas, 0.3f, DT*10);   // 1 ms waitKey
-
+    //int ret = showScaledCanvas(canvas, 0.6f, DT*10);   
+    int ret = showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, DT*10);
+    
     if (ret>0)
         cerr << "Key pressed: " << ret << endl;
     switch (ret) {
