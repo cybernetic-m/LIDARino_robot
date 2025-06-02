@@ -36,6 +36,7 @@ int main(int argc, char** argv){
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
   ros::Subscriber cmd_vel = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, VelocitiesCallback);
+  ros::Subscriber cmd_sim_vel = n.subscribe<geometry_msgs::Twist>("cmd_sim_vel", 10, VelocitiesCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
   double x = map_config.origin.x();
