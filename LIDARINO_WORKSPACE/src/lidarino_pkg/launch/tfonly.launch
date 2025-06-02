@@ -11,7 +11,7 @@
 
 <node pkg="tf"
       type="static_transform_publisher"
-      name="base_to_lidar_broadcaster"
+      name="map_to_scanmatcher_frame"
       args="0 0 0 0 0 0 map scanmatcher_frame 10"/>
 
 </launch>
