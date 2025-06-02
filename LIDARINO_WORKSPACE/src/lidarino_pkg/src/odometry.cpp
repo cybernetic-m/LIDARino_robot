@@ -25,37 +25,12 @@ void VelocitiesCallback(geometry_msgs::Twist velocities){
 }
 
 int main(int argc, char** argv){
-  double origin[3];
-  float resolution;
-  /*
-  if (! new_map){
-  origin[0] = 106.9;
-  origin[1] = -49.35;
-  origin[2] = 0.0;
-  resolution=0.1f;
-  }
-
-  else{
-    origin[0] = -51.200024;
-    origin[1] = -51.200024; 
-    origin[2] = 0.00;
-    resolution  = 0.05f;
-  }
-  */
 
   MapConfig map_config;
   if (!map_config.loadMapParameters(map_yaml_path)) {
       cerr << "Using default odometry parameters" << endl;
   }
 
-  origin[0] = map_config.origin.x();
-  origin[1] = map_config.origin.y();
-  origin[2] = 0.0;
-  resolution = map_config.resolution;
-  
-  float inv_res= 1/resolution;
-
-  
   ros::init(argc, argv, "odometry_publisher");
 
   ros::NodeHandle n;
@@ -63,8 +38,8 @@ int main(int argc, char** argv){
   ros::Subscriber cmd_vel = n.subscribe<geometry_msgs::Twist>("cmd_vel", 10, VelocitiesCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
-  double x = origin[0]*inv_res;  
-  double y = origin[1]*inv_res;
+  double x = map_config.origin.x();
+  double y = map_config.origin.y();
   double th = 0.0;
 
 
@@ -72,7 +47,7 @@ int main(int argc, char** argv){
   current_time = ros::Time::now();
   last_time = ros::Time::now();
 
-  ros::Rate r(10.0);
+  ros::Rate r(1.0);
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
