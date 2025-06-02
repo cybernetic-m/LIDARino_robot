@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
     ros::Publisher pub_initial_pose =n.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose",1,true);
-    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("scan", 1);
+    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
     ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_sim_vel", 1);
 
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);

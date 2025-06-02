@@ -214,7 +214,7 @@ int main(int argc, char** argv) {
     pose_pub  = n.advertise<geometry_msgs::PoseStamped>("robot_pose", 10);
 
     //laser_scan_sub = n.subscribe<const sensor_msgs::LaserScan&>("scan", 10, laserCallback);
-    laser_scan_sub      = n.subscribe("scan",10,laserCallback);
+    laser_scan_sub = n.subscribe("LiDAR/LD06",10,laserCallback);
 
     auto map_msg = ros::topic::waitForMessage<nav_msgs::OccupancyGrid>("/map", ros::Duration(5.0));
     
