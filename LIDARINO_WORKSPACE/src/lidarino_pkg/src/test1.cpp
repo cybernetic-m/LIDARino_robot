@@ -38,7 +38,7 @@ float default_resolution= 0.05f;
 
                     
 
-string base_path = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/";
+string base_path = "../";
 string map_yaml_path = base_path + "maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
 string map_file_path = base_path + "maps/map.pgm";
