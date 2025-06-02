@@ -10,6 +10,7 @@ project(lidarino_pkg)
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   roscpp
+  roslib
   sensor_msgs
   std_msgs
   tf 
