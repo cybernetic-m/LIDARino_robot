@@ -2,7 +2,7 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
-
+#include <ros/package.h>
 #include "map_config.h"
 
 using namespace std; 
