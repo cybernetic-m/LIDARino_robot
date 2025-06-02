@@ -22,7 +22,7 @@ using namespace std;
 //map parameters
 //const float resolution = 0.1f;
 const float resolution = 0.05f;
-string pkg_name = "lidarino_pkg"
+string pkg_name = "lidarino_pkg";
 string base_path = ros::package::getPath(lidarino_pkg);
 string map_yaml_path = base_path + "maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
