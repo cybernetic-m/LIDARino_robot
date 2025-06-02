@@ -1,7 +1,7 @@
 <!-- sim_nav.launch -->
 <launch>
   <!-- Simulator -->
-  <node pkg="lidarino_pkg" type="lidar_publisher_node"   name="simulation_node"/>
+  <!-- node pkg="lidarino_pkg" type="lidar_publisher_node"   name="simulation_node"/ -->
   <!-- Odometry integrator -->
   <node pkg="lidarino_pkg" type="odometry_node"     name="odometry_node"/>
   <!-- Static TF base -> lidar -->
