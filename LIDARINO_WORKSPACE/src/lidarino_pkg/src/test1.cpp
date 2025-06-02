@@ -40,9 +40,9 @@ float default_resolution= 0.05f;
 
 string pkg_name = "lidarino_pkg";
 string base_path = ros::package::getPath(pkg_name);
-string map_yaml_path = base_path + "maps/map.yml";
+string map_yaml_path = base_path + "/maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
-string map_file_path = base_path + "maps/map.pgm";
+string map_file_path = base_path + "/maps/map.pgm";
 //string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
 

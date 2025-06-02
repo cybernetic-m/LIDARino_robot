@@ -24,9 +24,9 @@ using namespace std;
 const float resolution = 0.05f;
 string pkg_name = "lidarino_pkg";
 string base_path = ros::package::getPath(pkg_name);
-string map_yaml_path = base_path + "maps/map.yml";
+string map_yaml_path = base_path + "/maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
-string map_file_path = base_path + "maps/map.pgm";
+string map_file_path = base_path + "/maps/map.pgm";
 //string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 //float default_or_x=-51.200024f, default_or_y=-51.200024f; map
 //106.9 -49.3 for cappero
