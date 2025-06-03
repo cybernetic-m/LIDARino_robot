@@ -26,7 +26,6 @@
 */
 
 #define nullptr NULL // Needed to use Arduino IDE on Raspberry Pi
-
 #include <ros.h>
 #include <geometry_msgs/Twist.h> // This is the custom message type for the cmd_vel
 #include <std_msgs/String.h>
@@ -65,7 +64,7 @@ extern float v_R; // Linear Velocity of the contact point of the right wheel
 
 // Motor definitions
 Motors motors;
-float v_max = 0.4; // our is 0.4 m/s (max velocity reached by your robot)
+float v_max = 3.0; // our is 0.4 m/s (max velocity reached by your robot)
 float L = 0.215; // Distance between the two wheels (needed to compute v_L and v_R) [in our case 0.135 m]
 
 // ROS-RASPBERRY VARIABLES

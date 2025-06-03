@@ -11,7 +11,7 @@ const int ECHO = 5;
 Motors::Motors() {}
 
 // Constructor to initialize the motor pins
-Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_L_ENA, int motor_R_ENB, float v_max, float L) {
+Motors::Motors(int motor_L_IN1, int motor_L_IN2, int motor_R_IN3, int motor_R_IN4, int motor_R_ENB, int motor_L_ENA, float v_max, float L) {
     // Constructor to initialize the motor pins
      this->motor_L_IN1 = motor_L_IN1;
      this->motor_L_IN2 = motor_L_IN2;
@@ -80,23 +80,23 @@ void Motors::Move(float v, float omega) {
 
     // Compute the PWM value for the motors
     int speed_L = round((v_L / v_max)* 255);
-    int speed_R = round((v_R / v_max)* 253); // We set 253 because we observe a small drift because of the right wheel, calibrate yours!
+    int speed_R = round((v_R / v_max)* 228); // We set 225 because we observe a small drift because of the right wheel, calibrate yours!
     
     // Limit the speed maximum to 255 and invert the sign if negative for both wheels
     if (speed_L > 255 || speed_L < -255) {
         speed_L = 255;
     }
-    if (speed_L < 128 && speed_L > -128) {
-        speed_L = 128;
+    if (speed_L < 52 && speed_L > -52) {
+        speed_L = 52;
     }
     else if (speed_L < 0) {
         speed_L = -speed_L;
     }
-    if (speed_R > 253 || speed_R < -253) {
-        speed_R = 253;
+    if (speed_R > 228 || speed_R < -228) {
+        speed_R = 228;
     }
-    if (speed_R < 127 && speed_R > -127) {
-        speed_R = 127;
+    if (speed_R < 52 && speed_R > -52) {
+        speed_R = 52;
     }
     else if (speed_R < 0) {
         speed_R = -speed_R;
