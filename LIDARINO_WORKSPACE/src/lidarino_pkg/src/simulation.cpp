@@ -8,10 +8,11 @@
 #include <geometry_msgs/Twist.h>          
 #include <geometry_msgs/TwistStamped.h>
 
-
+#include <ros/package.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>  
 #include <tf2/LinearMath/Quaternion.h>
+#include "map_config.h" 
 
 
 
@@ -19,14 +20,23 @@
 using namespace std;
 
 //map parameters
-const float resolution = 0.1f;
-const char* filename = "/home/francesco/Documenti/LIDARINO_ROBOT/LIDARino_robot/LIDARINO_WORKSPACE/src/lidarino_pkg/src/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
+//const float resolution = 0.1f;
+const float resolution = 0.05f;
+string pkg_name = "lidarino_pkg";
+string base_path = ros::package::getPath(pkg_name);
+string map_yaml_path = base_path + "/maps/map.yml";
+//string map_yaml_path = base_path + "maps/sim_map.yaml";
+string map_file_path = base_path + "/maps/map.pgm";
+//string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
+//float default_or_x=-51.200024f, default_or_y=-51.200024f; map
+//106.9 -49.3 for cappero
 
 
 //World parameters 
 float theta_initial=0;
-float robot_radius=0.20;
+float robot_radius=0.15;
 float scanner_radius= 0.05;
+float x_offset=-0.05,y_offset=0;
 UnicyclePlatform* robot_pointer;
 
 //SIMULATION PARAMETERS
@@ -37,6 +47,11 @@ float DT = 0.1f;
 //SCAN PARAMETERS
 float range_min=0.1,range_max=10, angle_min=-M_PI/2,angle_max=M_PI/2;
 int ranges_num=180;
+
+
+//New Canvas Parameters
+int canvas_mode = 3;  // 1=original, 2=scaled, 3=cropped+scaled
+float crop_width = 200, crop_height=200, scale=3;
 
 
 Isometry2f fromCoefficients(float tx, float ty, float alpha) {
@@ -61,13 +76,30 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
     ros::Publisher pub_initial_pose =n.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose",1,true);
-    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("scan", 1);
+    ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
     ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_sim_vel", 1);
 
     ros::Subscriber sub_cmd  = n.subscribe("cmd_vel", 20, cmdVelCallback);
+
+
+
+
+    //MapConfig map_config;
+
+    //if (!map_config.loadMapParameters(map_yaml_path)) {
+    //    map_config.image_file = base_path+'map/'+map_file_path;
+    //    map_config.resolution = resolution;
+    //    map_config.origin = Eigen::Vector2f(default_or_x, default_or_y);
+    //}
+    //GridMap grid_map(map_config.resolution, 0, 0);
+    //grid_map.loadFromImage(full_map_path.c_str(), map_config.resolution);
+    //grid_map.reset(map_config.origin, map_config.resolution);
     
+
+
+
     GridMap grid_map(resolution, 0, 0 );
-    grid_map.loadFromImage(filename, resolution);
+    grid_map.loadFromImage(map_file_path.c_str(), resolution);
 
     
     World world_object(grid_map);
@@ -80,14 +112,14 @@ int main(int argc, char** argv) {
     robot_pointer=&robot;
 
     LaserScan scan;
-    LaserScanner scanner(scan, robot, fromCoefficients(-0.07, 0, -0));
+    LaserScanner scanner(scan, robot, fromCoefficients(x_offset, y_offset, -0));
     scanner.radius = scanner_radius;
   
 
     /*
 
     GridMap grid_map(resolution, 0, 0);
-    grid_map.loadFromImage(filename, resolution);
+    grid_map.loadFromImage(map_file_path..c_str(), resolution);
     Eigen::Vector2f center = grid_map.grid2world(grid_map.origin());
 
     cerr << "center: " << center.transpose() << endl;
@@ -167,7 +199,9 @@ int main(int argc, char** argv) {
 
     world_object.draw(canvas); 
 
-    int ret = showCanvas(canvas, DT*10);   // 1 ms waitKey
+    //int ret = showCanvas(canvas, DT*10);   // 1 ms waitKey
+    //int ret = showScaledCanvas(canvas, 0.6f, DT*10);   
+    int ret = showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, DT*10);
 
     if (ret>0)
         cerr << "Key pressed: " << ret << endl;

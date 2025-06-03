@@ -1,0 +1,26 @@
+<!-- sim_nav.launch -->
+<launch>
+  <!-- Simulator -->
+  <!-- node pkg="lidarino_pkg" type="lidar_publisher_node"   name="simulation_node"/ -->
+  <!-- Odometry integrator -->
+  <node pkg="lidarino_pkg" type="odometry_node"     name="odometry_node"/>
+  <!-- Static TF base -> lidar -->
+
+<node pkg="tf"
+      type="static_transform_publisher"
+      name="link_to_footprint_broadcaster"
+      args="0 0 0 0 0 0 base_link base_footprint 10"/>
+
+<node pkg="tf"
+      type="static_transform_publisher"
+      name="base_to_lidar_broadcaster"
+      args="0 0 0 0 0 0 base_footprint lidar_frame 10"/>
+      
+  <node pkg="lidarino_pkg" type="localization_node"      name="localizer_node"/> 
+
+  <node pkg="rviz" type="rviz"      name="rviz_"
+  args="-d $(find lidarino_pkg)/rviz/rviz_map_and_robot.rviz"
+  />     
+
+</launch>
+
