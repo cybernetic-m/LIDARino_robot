@@ -42,7 +42,9 @@ string pkg_name = "lidarino_pkg";
 string base_path = ros::package::getPath(pkg_name);
 string map_yaml_path = base_path + "/maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
+//string map_file_path = base_path + "/maps/map.pgm";
 string map_file_path = base_path + "/maps/map.pgm";
+
 //string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 
 
@@ -147,24 +149,15 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
     string_position_pub.publish(msg);
 
-    //geometry_msgs::PolygonStamped  msg;
-    //msg.header.stamp = ros::Time::now();
-    //geometry_msgs::Polygon polygon;
-    //geometry_msgs::Point32* square {geometry_msgs::Point32(x_world+0.5,y_world+0.5,0),geometry_msgs::Point32(x_world+0.5,y_world-0.5,0),geometry_msgs::Point32(x_world-0.5,y_world-0.5,0),geometry_msgs::Point32(x_world-0.5,y_world+0.5,0),geometry_msgs::Point32(x_world+0.5,y_world+0.5,0)};
-    //polygon.points = square;
-    //msg.Polygon = polygon;
 
-    geometry_msgs::PolygonStamped foot;
-    foot.header.stamp    = ros::Time::now();
-    foot.header.frame_id = "map";                 
+    geometry_msgs::PolygonStamped robot_foot;
+    robot_foot.header.stamp    = ros::Time::now();
+    robot_foot.header.frame_id = "map";                 
 
                         
     Eigen::Rotation2Df R(theta);                  
 
     array<Eigen::Vector2f,4> corners_square = {{{-0.1f, -0.1f},{ 0.1f, -0.1f},{ 0.1f,  0.1f},  {-0.1f,  0.1f} }};
-
-
-    foot.polygon.points.reserve(4);
 
     for (int i=0;i<4;i++) {
         Eigen::Vector2f pp = rob_in_wd + R * corners_square[i];  
@@ -172,11 +165,11 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
         p.x = pp.x();
         p.y = pp.y();
         p.z = 0.0f;
-        foot.polygon.points.push_back(p);
+        robot_foot.polygon.points.push_back(p);
     
     }
 
-    rviz_position_pub.publish(foot);
+    rviz_position_pub.publish(robot_foot);
 
 
     geometry_msgs::TransformStamped t;

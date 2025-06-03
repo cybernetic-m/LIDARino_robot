@@ -26,7 +26,9 @@ string pkg_name = "lidarino_pkg";
 string base_path = ros::package::getPath(pkg_name);
 string map_yaml_path = base_path + "/maps/map.yml";
 //string map_yaml_path = base_path + "maps/sim_map.yaml";
+//string map_file_path = base_path + "/maps/map.pgm";
 string map_file_path = base_path + "/maps/map.pgm";
+
 //string map_file_path= base_path+ "maps/cappero_laser_odom_diag_2020-05-06-16-26-03.png";
 //float default_or_x=-51.200024f, default_or_y=-51.200024f; map
 //106.9 -49.3 for cappero
@@ -115,51 +117,6 @@ int main(int argc, char** argv) {
     LaserScanner scanner(scan, robot, fromCoefficients(x_offset, y_offset, -0));
     scanner.radius = scanner_radius;
   
-
-    /*
-
-    GridMap grid_map(resolution, 0, 0);
-    grid_map.loadFromImage(map_file_path..c_str(), resolution);
-    Eigen::Vector2f center = grid_map.grid2world(grid_map.origin());
-
-    cerr << "center: " << center.transpose() << endl;
-    cerr << "origin: " << grid_map.origin().transpose() << endl;
-
-
-    //grid_map.draw(canvas);
-
-
-    // world object definition
-
-    WorldItem* items[3];
-    memset(items, 0, sizeof(WorldItem*) * 3);
-
-    World world_object(grid_map);
-    items[0] = &world_object;
-
-
-
-    Eigen::Isometry2f robot_in_world = Eigen::Isometry2f::Identity();
-    robot_in_world.translation() << 5, 0;
-    UnicyclePlatform robot(world_object, robot_in_world);
-    robot.radius = 1;
-    robot.tv = 0;
-    robot.rv = 0;
-    items[1] = &robot;
-
-
-    LaserScan scan(range_min, range_max, angle_min,angle_max, ranges_num);
-    Isometry2f scanner_in_robot = Eigen::Isometry2f::Identity();
-    scanner_in_robot.translation().x() = 0.f;       
-    LaserScanner scanner(scan, robot, scanner_in_robot, SCAN_FREQ_HZ);
-    scanner.radius = 0.5f;
-    items[2] = &scanner;
-
-    
-    //...................................................................
-    
-
-    */
 
     geometry_msgs::PoseWithCovarianceStamped init_position;
     init_position.header.frame_id = "/map";
