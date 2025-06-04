@@ -3,7 +3,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./images/image_1.png" alt="Description" width="600" height = "400" />
 
-##STORY
+## STORY
 
 da v0.1 a v0.2
 
@@ -13,7 +13,7 @@ da v0.1 a v0.2
  ```sh 
  git clone "https://github.com/cybernetic-m/LIDARino_robot"
  ```
-2. Install rosserial on the arduino IDE 
+2. Install rosserial on the arduino IDE and on on ROS
 
 3. open the firmware folder with arduino IDE and upload it to your arduino
 
@@ -39,6 +39,21 @@ da v0.1 a v0.2
  . ./devel/setup.bash
  roslaunch lidarino_pkg launch2.launch
  ```
+
+3. start rosserial on the raspberry side
+
+ ```sh 
+ rosrun rosserial_python serial_node.py /dev/ttyACM0
+ ```
+
+4. start the keyboard interface 
+
+ ```sh 
+ cd LIDARino_robot/LIDARINO_WORKSPACE
+ . ./devel/setup.bash
+ rosrun lidarino_pkg keyboard_interface
+ ```
+
 
  ## Authors
 Massimo Romano (2043836) (https://github.com/cybernetic-m) 
