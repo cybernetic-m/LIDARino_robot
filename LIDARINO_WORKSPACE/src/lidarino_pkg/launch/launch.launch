@@ -23,6 +23,17 @@
         args="$(find lidarino_pkg)/maps/sim_map.yaml"
         name="map"/>
 
+  <!-- Move Base Node for planning -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_global_planner" value="navfn/NavfnROS" />
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS" />
+    <rosparam file="$(find lidarino_pkg)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find lidarino_pkg)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find lidarino_pkg)/config/global_costmap.yaml" command="load" />
+    <rosparam file="$(find lidarino_pkg)/config/local_costmap.yaml" command="load" />
+    <rosparam file="$(find lidarino_pkg)/config/base_local_planner.yaml" command="load" />
+  </node>
+
   <node pkg="rviz" type="rviz"      name="rviz_"
   args="-d $(find lidarino_pkg)/rviz/rviz_map_and_robot.rviz"
   />     
