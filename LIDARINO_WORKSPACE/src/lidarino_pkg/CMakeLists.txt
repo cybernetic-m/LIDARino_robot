@@ -162,7 +162,7 @@ target_link_libraries(world_item ${catkin_LIBRARIES} draw_helpers ${OpenCV_LIBS}
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/lidarino_pkg_node.cpp)
 
-add_executable(localization_node src/test1.cpp
+add_executable(localization_node src/localizer.cpp
     src/dmap.cpp
     src/dmap_localizer.cpp
     src/grid_map.cpp)

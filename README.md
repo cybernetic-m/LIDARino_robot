@@ -1,14 +1,13 @@
 # LIDARino v0.1
 This is the official repository of the Robot Programming subject in Artificial Intelligence and Robotics course at Sapienza University of Rome
 
-
-
 <img src="./images/image_1.png" alt="Description" width="600" height = "400" />
 
 
 <img src="./gifs/RP3v3.gif" alt="Description"  width="600" height = "1000" />
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="1000" height = "600" />
+
 
 ## HARDWARE
 
@@ -85,6 +84,12 @@ LIDARINO_WORKSPACE
             ├── navigation.rviz => navigation package rviz configuration 
             ├── rviz_map_and_robot.rviz => rviz configuration for our localizer
         ├── src
+            ├── dmap_localizer.cpp => implementation of a dmap based localizer 
+            ├── localizer.cpp => node that uses the localizer to localize the robot in the map
+            ├── simulation.cpp => simulation node to handle a virtual world with a map and robot with a lidar
+            ├── odometry.cpp => node to do odometry based either on a simulated cmd_vel or the real one 
+            ├── keyboard_interface.cpp => node to create a interface between the keyboard and the robot
+            ├── pos_subscriber.cpp => node to test that the position is being published correctly
 ```
 
 
