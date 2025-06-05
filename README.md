@@ -28,7 +28,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 ## STORY
 
-We started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
+To design the base for our robot we started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
 
 
 <img src="./images/lidarinov01.jpeg" alt="Description" width="600" height = "1000"  />
@@ -45,6 +45,47 @@ But the space was still too little to fit everything comfortably without fear of
 
 <img src="./gifs/rplidarino3.gif" alt="Description"   width="600" height = "1000"/>
 
+# Project Structure 
+
+```sh 
+firmware
+├── encoderWheel.cpp => Functions to read data from encoders
+├── firmlib.h => header file for the whole firmware library 
+├── firmware.ino => sketch that puts all the firmware together and that gets uploaded to the Arduino
+├── Motors.cpp => Implementation of the class motors to control both motors
+├── Motors.h => header file for the class motors to control both motors
+├── ultrasound.cpp => Functions to request and read data from the ultrasound sensor
+├── velocitiesCallback.cpp => Function that gets called when a new command from rosserial arrives
+LIDARINO_WORKSPACE
+├── build ...
+├── devel ...
+├── src
+    ├── lidarino_pkg
+        ├── config 
+            ├── base_local_planner.yaml => local planner parameters
+            ├── costmap_common.yaml => general costmap parameters
+            ├── global_costmap.yaml => gloabal costmap parameters
+            ├── local_costmap.yaml => local costmap parameters
+        ├── launch
+            ├── launch.launch => planning complete launcher
+            ├── launch2.launch => everything except planning
+            ├── launch2pi.launch => same as launch2 but no simulator map server to launch it separately
+            ├── move_base.launch => only planning
+            ├── pi.launch => same as launch2 but no simulator
+            ├── Testing_Localization.launch => localization simulation
+            ├── tfonly.launch => only tf nodes
+        ├── maps
+            ├── cappero_laser_odom_diag_2020-05-06-16-26-03.png => diag map
+            ├── map.pgm => 1st configuration of the room
+            ├── map.yml => yml file for the room map
+            ├── map2.pgm => 2nd configuration of the room
+            ├── map3.pgm => 3rd configuration of the room
+            ├── sim_map.yaml => yaml file for the diag map
+        ├── rviz
+            ├── navigation.rviz => navigation package rviz configuration 
+            ├── rviz_map_and_robot.rviz => rviz configuration for our localizer
+        ├── src
+```
 
 
 ## INSTALLATION 
