@@ -16,10 +16,10 @@ da v0.1 a v0.2
 
 
 
-<img src="./images/lidarinov01.jpeg" alt="Description"  width="600" height = "400" />
-<img src="./gifs/rplidarino1.gif" alt="Description"  width="600" height = "400" />
-<img src="./gifs/rplidarino2.gif" alt="Description"  width="600" height = "400" />
-<img src="./gifs/rplidarino3.gif" alt="Description"  width="600" height = "400" />
+<img src="./images/lidarinov01.jpeg" alt="Description"  />
+<img src="./gifs/rplidarino1.gif" alt="Description"   />
+<img src="./gifs/rplidarino2.gif" alt="Description"  />
+<img src="./gifs/rplidarino3.gif" alt="Description"  />
 ## INSTALLATION 
 
 1. Clone the repository:  
