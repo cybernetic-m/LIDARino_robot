@@ -8,7 +8,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./gifs/RP3v3.gif" alt="Description"  width="600" height = "1000" />
 
-<img src="./gifs/simcropped3.gif" alt="Description"  width="600" height = "400" />
+<img src="./gifs/simcropped3.gif" alt="Description"  width="1000" height = "600" />
 
 ## STORY
 
