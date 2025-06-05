@@ -10,16 +10,39 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="1000" height = "600" />
 
+## HARDWARE
+
+1. Arduino UNO
+
+2. Raspberry PI
+
+3. DUAL H-BRIDGE L298N
+
+4. 2 TT motors 
+
+5. Ultrasonic sensor HC-SR04
+
+6. Breadboard
+
+7. Power Bank for the Raspberry and separate battery for the motors (9V+ recommended ) 
+
 ## STORY
 
-da v0.1 a v0.2
-
-
+We started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
 
 
 <img src="./images/lidarinov01.jpeg" alt="Description" width="600" height = "1000"  />
+
+From there we started to write the firmware on Arduino to read data from all the sensors and to control the motors, and we programmed it to be able to turn on it's axis
+
 <img src="./gifs/rplidarino1.gif" alt="Description"    width="600" height = "1000"/>
+
+and go "straight"
+
 <img src="./gifs/rplidarino2.gif" alt="Description"  width="600" height = "1000" />
+
+But the space was still too little to fit everything comfortably without fear of disconnects, for example we had to fit the breadboard upside down which made the sensors not very reliable. To fix that we created a new version bigger still, so that we could leave the top for the lidar and raspberry only and fit Arduino and all the sensor and motor and their wiring in the bottom base, that made it so that we could control it better.
+
 <img src="./gifs/rplidarino3.gif" alt="Description"   width="600" height = "1000"/>
 
 
@@ -30,9 +53,9 @@ da v0.1 a v0.2
  ```sh 
  git clone "https://github.com/cybernetic-m/LIDARino_robot"
  ```
-2. Install rosserial on the arduino IDE and on on ROS
+2. Install rosserial on the Arduino IDE and on on ROS
 
-3. open the firmware folder with arduino IDE and upload it to your arduino
+3. open the firmware folder with Arduino IDE and upload it to your Arduino
 
 4. Install the lidar ros package from the repo and follow the instructions in the doc folder of the repo
  ```sh 
