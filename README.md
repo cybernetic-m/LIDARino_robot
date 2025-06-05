@@ -53,7 +53,7 @@ da v0.1 a v0.2
  ```sh 
  cd LIDARino_robot/LIDARINO_WORKSPACE
  . ./devel/setup.bash
- roslaunch lidarino_pkg launch2.launch
+ roslaunch lidarino_pkg pi.launch
  ```
 
 3. start rosserial on the raspberry side
