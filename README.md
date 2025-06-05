@@ -6,7 +6,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 <img src="./images/image_1.png" alt="Description" width="600" height = "400" />
 
 
-<img src="./images/RP3v3.gif" alt="Description" />
+<img src="./images/RP3v3.gif" alt="Description"  width="600" height = "400" />
 
 
 ## STORY
