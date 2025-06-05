@@ -40,8 +40,8 @@ int main(int argc, char** argv){
   ros::Subscriber cmd_sim_vel = n.subscribe<geometry_msgs::Twist>("cmd_sim_vel", 10, VelocitiesCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
-  double x = map_config.origin.x();
-  double y = map_config.origin.y();
+  double x = 0.0;//map_config.origin.x();
+  double y = 0.0; //map_config.origin.y();
   double th = 0.0;
 
 

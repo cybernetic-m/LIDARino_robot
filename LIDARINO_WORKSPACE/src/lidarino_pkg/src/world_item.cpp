@@ -139,10 +139,10 @@ void World::draw(Canvas& canvas, bool show_parent) const {
   Vector2f origin=grid_map->world2grid(Vector2f::Zero());
   Vector2f x0=origin+Vector2f(0,grid_map->rows/2);
   Vector2f x1=origin-Vector2f(0,grid_map->rows/2);
-  drawLine(canvas, x0, x1, 200); 
+  //drawLine(canvas, x0, x1, 200); 
   Vector2f y0=origin+Vector2f(grid_map->cols/2,0);
   Vector2f y1=origin-Vector2f(grid_map->cols/2,0);
-  drawLine(canvas, y0, y1, 200);
+  //drawLine(canvas, y0, y1, 200);
 
   for (auto child: children)
      child->draw(canvas, false);

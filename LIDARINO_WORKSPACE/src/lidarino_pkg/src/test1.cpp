@@ -21,9 +21,10 @@
 
 #include <nav_msgs/OccupancyGrid.h>
 #include "map_config.h"
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+
 
 using namespace std;
-
 
 DMap dmap(0,0); 
 GridMapping grid_mapping;
@@ -61,6 +62,7 @@ ros::Publisher rviz_position_pub;
 ros::Publisher string_position_pub;
 ros::Publisher pose_pub;
 ros::Subscriber laser_scan_sub;
+ros::Publisher amcl_pose_pub;
 unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
 Isometry2f lmap_pose;
 
@@ -135,7 +137,13 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
     //showCanvas(canvas,1);
     //showScaledCanvas(canvas, 0.4f, 1);
     showCanvasMode(canvas, canvas_mode, crop_width, crop_height, scale, 1);
-    
+
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, theta);
+    Eigen::Rotation2Df R(theta);
+    const std::string map_frame = "map";
+
     
 
     //msg.data = std::to_string(x_world);
@@ -152,10 +160,8 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
     geometry_msgs::PolygonStamped robot_foot;
     robot_foot.header.stamp    = ros::Time::now();
-    robot_foot.header.frame_id = "map";                 
-
-                        
-    Eigen::Rotation2Df R(theta);                  
+    robot_foot.header.frame_id = map_frame;     
+                     
 
     array<Eigen::Vector2f,4> corners_square = {{{-0.1f, -0.1f},{ 0.1f, -0.1f},{ 0.1f,  0.1f},  {-0.1f,  0.1f} }};
 
@@ -173,26 +179,56 @@ void laserCallback(const sensor_msgs::LaserScan& scan) {
 
 
     geometry_msgs::TransformStamped t;
-    t.header.stamp        = ros::Time::now(); 
-    t.header.frame_id     = "map";
-    t.child_frame_id      = "odom";
+    t.header.stamp = ros::Time::now();
+    t.header.frame_id = map_frame;  
+    t.child_frame_id = "odom";
     t.transform.translation.x = x_world;
     t.transform.translation.y = y_world;
     t.transform.translation.z = 0.0;
-    tf2::Quaternion q;   q.setRPY(0, 0, theta);
-    t.transform.rotation.x = q.x();   t.transform.rotation.y = q.y();
-    t.transform.rotation.z = q.z();   t.transform.rotation.w = q.w();
+    t.transform.rotation.x = q.x();  
+    t.transform.rotation.y = q.y();  
+    t.transform.rotation.z = q.z();  
+    t.transform.rotation.w = q.w();
+
+
     tf_broadcaster->sendTransform(t);
 
-
-
     geometry_msgs::PoseStamped pose;
-    pose.header   = t.header;
-    pose.pose.position.x  = x_world;
-    pose.pose.position.y  = y_world;
-    pose.pose.orientation = t.transform.rotation;
+    pose.header.stamp = ros::Time::now();
+    pose.header.frame_id = map_frame;
+    pose.pose.position.x = x_world;
+    pose.pose.position.y = y_world;
+    pose.pose.position.z = 0.0;  
+
+    pose.pose.orientation.x = q.x(); 
+    pose.pose.orientation.y = q.y(); 
+    pose.pose.orientation.z = q.z();  
+    pose.pose.orientation.w = q.w();  
     pose_pub.publish(pose);
-  
+    
+    geometry_msgs::PoseWithCovarianceStamped amcl_pose;
+    amcl_pose.header.stamp = ros::Time::now();
+    amcl_pose.header.frame_id = map_frame;
+    amcl_pose.pose.pose.position.x = x_world;
+    amcl_pose.pose.pose.position.y = y_world;
+    amcl_pose.pose.pose.position.z = 0.0;
+
+    amcl_pose.pose.pose.orientation.x = q.x(); 
+    amcl_pose.pose.pose.orientation.y = q.y();  
+    amcl_pose.pose.pose.orientation.z = q.z();  
+    amcl_pose.pose.pose.orientation.w = q.w(); 
+    for(int i = 0; i < 36; i++) {
+        amcl_pose.pose.covariance[i] = 0.0;
+    }
+
+    amcl_pose.pose.covariance[0] = 0.25;  
+    amcl_pose.pose.covariance[7] = 0.25;    
+    amcl_pose.pose.covariance[35] = 0.17;  
+    
+    amcl_pose_pub.publish(amcl_pose);
+
+
+
 }
 
   
@@ -202,9 +238,10 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "LIDARINO_LOCALIZINO");
     ros::NodeHandle n;
 
-    string_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); //added
+    string_position_pub = n.advertise<std_msgs::String>("/POSITION", 10); 
     rviz_position_pub= n.advertise<geometry_msgs::PolygonStamped>("local_costmap/robot_footprint",10);
     pose_pub  = n.advertise<geometry_msgs::PoseStamped>("robot_pose", 10);
+    amcl_pose_pub = n.advertise<geometry_msgs::PoseWithCovarianceStamped>("amcl_pose", 10);
 
     //laser_scan_sub = n.subscribe<const sensor_msgs::LaserScan&>("scan", 10, laserCallback);
     laser_scan_sub = n.subscribe("LiDAR/LD06",10,laserCallback);
@@ -223,10 +260,9 @@ int main(int argc, char** argv) {
 
 
     cerr << "Map loaded successfully:" << endl;
-    cerr << "  Dimensions: " << grid_map.rows << "x" << grid_map.cols << endl;
-    cerr << "  Resolution: " << resolution << endl;
-    cerr << "  Origin: " << origin << endl;
-    cerr << "  Center: " << grid_map.center() << endl;
+    cerr << " Dimensions: " << grid_map.rows << "x" << grid_map.cols << endl;
+    cerr << " Resolution: " << resolution << endl;
+    cerr << " Center: " << grid_map.center() << endl;
 
 
     grid_map.draw(canvas); 

@@ -1,4 +1,3 @@
-<!-- sim_nav.launch -->
 <launch>
   <!-- Simulator -->
   <node pkg="lidarino_pkg" type="lidar_publisher_node"   name="simulation_node"/>

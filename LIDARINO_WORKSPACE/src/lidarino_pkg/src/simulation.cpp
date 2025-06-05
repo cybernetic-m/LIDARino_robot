@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "SCANNERINO_SIMULINO");
     ros::NodeHandle n;
 
-    ros::Publisher pub_initial_pose =n.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose",1,true);
+    ros::Publisher pub_initial_pose =n.advertise<geometry_msgs::PoseWithCovarianceStamped>("initialpose", 1, true);
     ros::Publisher pub_scan =n.advertise<sensor_msgs::LaserScan>("LiDAR/LD06", 1);
     ros::Publisher pub_vel = n.advertise<geometry_msgs::Twist>("cmd_sim_vel", 1);
 
@@ -105,9 +105,12 @@ int main(int argc, char** argv) {
 
     
     World world_object(grid_map);
+    Vector2f origin(-grid_map.cols*resolution*0.5f, grid_map.rows*resolution*0.5f);
+    grid_map.reset(origin, resolution);
     Vector2f grid_middle(grid_map.cols/2, grid_map.rows/2); //106.9 -49.3 for cappero
     Vector2f world_middle = grid_map.grid2world(grid_middle);
-    cerr << "grid_middle is:" << grid_middle << "world middle is:"<< world_middle << endl ; 
+
+    cerr << "s:grid_middle is:" << grid_middle << "s:world middle is:"<< world_middle << endl ; 
 
     UnicyclePlatform robot(world_object, fromCoefficients(world_middle.x(), world_middle.y(), theta_initial));
     robot.radius=robot_radius;
@@ -119,12 +122,21 @@ int main(int argc, char** argv) {
   
 
     geometry_msgs::PoseWithCovarianceStamped init_position;
-    init_position.header.frame_id = "/map";
+    
+
+    init_position.header.frame_id = "map";;
     init_position.pose.pose.position.x = world_middle.x();
     init_position.pose.pose.position.y = world_middle.y();
+    init_position.pose.pose.position.z = 0.0;
     tf2::Quaternion q;
     q.setRPY(0.0, 0.0, theta_initial); 
-    init_position.pose.pose.orientation = tf2::toMsg(q);
+    init_position.pose.pose.orientation.x = q.x(); 
+    init_position.pose.pose.orientation.y = q.y();  
+    init_position.pose.pose.orientation.z = q.z();  
+    init_position.pose.pose.orientation.w = q.w(); 
+    for(int i = 0; i < 36; i++) { // some people do this
+    init_position.pose.covariance[i] = 0.0;
+    }   
     init_position.pose.covariance[0]  = 0.25;    
     init_position.pose.covariance[7]  = 0.25;    
     init_position.pose.covariance[35] = 0.17; 

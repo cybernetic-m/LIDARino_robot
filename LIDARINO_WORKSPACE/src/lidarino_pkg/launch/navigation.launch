@@ -1,0 +1,43 @@
+<launch>
+  <!-- Simulator -->
+  <node pkg="lidarino_pkg" type="lidar_publisher_node" name="simulation_node" output="screen"/>
+  
+  <!-- Odometry integrator -->
+  <node pkg="lidarino_pkg" type="odometry_node" name="odometry_node" output="screen"/>
+  
+  <node pkg="tf" type="static_transform_publisher" name="link_to_footprint_broadcaster"
+        args="0 0 0 0 0 0 base_link base_footprint 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_to_lidar_broadcaster"
+        args="0 0 0 0 0 0 base_footprint lidar_frame 100"/>
+      
+  <!-- Localization node -->
+  <node pkg="lidarino_pkg" type="localization_node" name="localizer_node" output="screen"/> 
+ 
+  <node pkg="map_server" type="map_server" name="map_server" output="screen"
+        args="$(find lidarino_pkg)/maps/map.yml">
+    <param name="frame_id" value="map"/>
+  </node>
+  
+  <!-- Move Base Node  -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_global_planner" value="navfn/NavfnROS"/>
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    
+    <!-- Load costmap configurations -->
+    <rosparam file="$(find lidarino_pkg)/config/costmap_common.yaml" command="load" ns="global_costmap"/>
+    <rosparam file="$(find lidarino_pkg)/config/costmap_common.yaml" command="load" ns="local_costmap"/>
+    <rosparam file="$(find lidarino_pkg)/config/global_costmap.yaml" command="load"/>
+    <rosparam file="$(find lidarino_pkg)/config/local_costmap.yaml" command="load"/>
+    <rosparam file="$(find lidarino_pkg)/config/base_local_planner.yaml" command="load"/>
+    
+    <!-- Move_base parameters -->
+    <param name="controller_frequency" value="10.0"/>
+    <param name="planner_patience" value="5.0"/>
+    <param name="controller_patience" value="15.0"/>
+    <param name="recovery_behavior_enabled" value="true"/>
+    
+  </node>
+  
+  <node pkg="rviz" type="rviz" name="rviz_navigation" output="screen"
+        args="-d $(find lidarino_pkg)/rviz/navigation.rviz"/>
+</launch>

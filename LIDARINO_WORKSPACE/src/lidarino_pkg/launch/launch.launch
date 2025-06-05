@@ -20,7 +20,7 @@
  
   <!-- Map server (static map the simulator already uses) -->
   <node pkg="map_server" type="map_server"
-        args="$(find lidarino_pkg)/maps/sim_map.yaml"
+        args="$(find lidarino_pkg)/maps/map.yml"
         name="map"/>
 
   <!-- Move Base Node for planning -->
