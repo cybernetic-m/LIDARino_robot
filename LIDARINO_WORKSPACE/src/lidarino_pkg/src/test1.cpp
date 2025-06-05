@@ -279,7 +279,7 @@ int main(int argc, char** argv) {
 
     cerr << "LIDARINO_LOCALIZINO node initialized and ready" << endl;
 
-    ros::Rate r(10.0);
+    ros::Rate r(50.0);
     while (ros::ok()) {
       ros::spinOnce();
       r.sleep();
