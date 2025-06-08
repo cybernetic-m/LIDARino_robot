@@ -124,12 +124,9 @@ LIDARINO_WORKSPACE
 
 <img src="./images/v01_1.png" alt="Description" width="600" height = "400" />
 
-<img src="./images/v02_1.png" alt="Description" width="600" height = "400" />
-
 [example](https://www.tinkercad.com/things/dUmpkYZLHeb-chassisupv02)
 
 To design the base for our robot we started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
-
 
 <img src="./images/lidarinov01.jpeg" alt="Description" width="600" height = "1000"  />
 
@@ -142,6 +139,10 @@ and go "straight"
 <img src="./gifs/rplidarino2.gif" alt="Description"  width="600" height = "1000" />
 
 But the space was still too little to fit everything comfortably without fear of disconnects, for example we had to fit the breadboard upside down which made the sensors not very reliable. To fix that we created a new version bigger still, so that we could leave the top for the lidar and raspberry only and fit Arduino and all the sensor and motor and their wiring in the bottom base, that made it so that we could control it better.
+
+### v0.2
+
+<img src="./images/v02_1.png" alt="Description" width="600" height = "400" />
 
 <img src="./gifs/rplidarino3.gif" alt="Description"   width="600" height = "1000"/>
 
