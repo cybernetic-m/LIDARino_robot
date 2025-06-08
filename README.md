@@ -4,6 +4,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 <img src="./images/lidarino_v02.jpeg" alt="Description" width="500" height = "800" />
 
 <img src="./gifs/local_ex.gif" alt="Description"  width="500" height = "1000" />
+FULL VIDEO HERE: https://drive.google.com/file/d/1uY1311wZvZpM1vVac2CnY4hhfMcjk1Bl/view?usp=drive_link
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="800" height = "400" />
 
