@@ -62,28 +62,47 @@ LIDARINO_WORKSPACE
  ```sh 
  git clone "https://github.com/cybernetic-m/LIDARino_robot"
  ```
-2. Install rosserial on the Arduino IDE and on on ROS
 
-3. Launch the Arduino IDE and open the firmware.ino
+2. Install ROS Noetic on your PC following these [instructions](https://wiki.ros.org/noetic/Installation/Ubuntu)
 
-3.5 Upload the firmware to your Arduino 
+3. Configuring your ROS environment on your PC following these [instructions](https://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
+   !!!Important: You need at least the catkin_ws!!!  
+ 
+5. Install ROS Melodic on your Raspberry following these [instructions](https://wiki.ros.org/ROSberryPi/Installing%20ROS%20Melodic%20on%20the%20Raspberry%20Pi)
 
-4. Install the lidar ros package from the repo and follow the instructions in the doc folder of the repo
+6. Configuring your ROS environment on Raspberry following these [instructions](https://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
+   !!!Important: You need at least the catkin_ws!!!  
+   
+7. Install rosserial-arduino on the Arduino IDE with these [instructions](https://wiki.ros.org/rosserial_arduino/Tutorials/Arduino%20IDE%20Setup)
+
+8. Install rosserial on Raspberry PI:
+ ```sh 
+cd ~/catkin_ws/
+git clone "https://github.com/ros-drivers/rosserial"
+catkin_make
+```
+9.
+
+10. Launch the Arduino IDE and open the "firmware.ino"
+
+11. Upload the firmware to your Arduino 
+
+12. Install the lidar ros package from the repo and follow the instructions in the doc folder of the repo
  ```sh 
  git clone "https://github.com/LetsOKdo/sdk_ld06_raspberry_ros"
  ```
 
-5. (optional) follow point 7 of this tutorial https://yoraish.wordpress.com/2021/09/08/a-full-autonomous-stack-a-tutorial-ros-raspberry-pi-arduino-slam/ to install hector mapper to create a custom map
+13. (Mapper - optional) follow point 7 of this tutorial https://yoraish.wordpress.com/2021/09/08/a-full-autonomous-stack-a-tutorial-ros-raspberry-pi-arduino-slam/ to install hector mapper to create a custom map
 
 ## LAUNCH
 
-1. start the lidar 
+1. Start the lidar: 
  ```sh 
  cd sdk_ld06_raspberry_ros
  roslaunch ldlidar ld06.launch 
  ```
 
-2. start our package in another terminal
+2. Start our package in another terminal:
 
  ```sh 
  cd LIDARino_robot/LIDARINO_WORKSPACE
@@ -91,13 +110,13 @@ LIDARINO_WORKSPACE
  roslaunch lidarino_pkg pi.launch
  ```
 
-3. start rosserial on the raspberry side
+3. Start rosserial on the raspberry side (change the PORT based on your Arduino serial communication /dev/{your_port}, you can see it on [Arduino IDE](https://support.arduino.cc/hc/en-us/articles/4406856349970-Select-board-and-port-in-Arduino-IDE):
 
  ```sh 
  rosrun rosserial_python serial_node.py /dev/ttyACM0
  ```
 
-4. start the keyboard interface 
+4. Start the keyboard interface: 
 
  ```sh 
  cd LIDARino_robot/LIDARINO_WORKSPACE
