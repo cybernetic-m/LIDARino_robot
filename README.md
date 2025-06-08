@@ -120,6 +120,7 @@ LIDARINO_WORKSPACE
 7. Power Bank for the Raspberry and separate battery for the motors (9V+ recommended ) 
 
 ## VERSIONS
+### v0.1
 
 <img src="./images/v01_1.png" alt="Description" width="600" height = "400" />
 
