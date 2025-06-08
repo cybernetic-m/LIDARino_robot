@@ -1,7 +1,7 @@
 # LIDARino
 This is the official repository of the Robot Programming subject in Artificial Intelligence and Robotics course at Sapienza University of Rome
 
-<img src="./images/lidarino_v02.jpeg" alt="Description" width="600" height = "700" />
+<img src="./images/lidarino_v02.jpeg" alt="Description" width="600" height = "800" />
 
 <img src="./images/authors.png" alt="Description" width="600" height = "300" />
 
