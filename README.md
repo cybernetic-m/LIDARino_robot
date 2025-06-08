@@ -1,48 +1,11 @@
-# LIDARino v0.1
+# LIDARino
 This is the official repository of the Robot Programming subject in Artificial Intelligence and Robotics course at Sapienza University of Rome
 
-<img src="./images/image_1.png" alt="Description" width="600" height = "400" />
 
 
 <img src="./gifs/RP3v3.gif" alt="Description"  width="600" height = "1000" />
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="800" height = "400" />
-
-
-## HARDWARE
-
-1. Arduino UNO
-
-2. Raspberry PI
-
-3. DUAL H-BRIDGE L298N
-
-4. 2 TT motors 
-
-5. Ultrasonic sensor HC-SR04
-
-6. Breadboard
-
-7. Power Bank for the Raspberry and separate battery for the motors (9V+ recommended ) 
-
-## STORY
-
-To design the base for our robot we started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
-
-
-<img src="./images/lidarinov01.jpeg" alt="Description" width="600" height = "1000"  />
-
-From there we started to write the firmware on Arduino to read data from all the sensors and to control the motors, and we programmed it to be able to turn on it's axis
-
-<img src="./gifs/rplidarino1.gif" alt="Description"    width="600" height = "1000"/>
-
-and go "straight"
-
-<img src="./gifs/rplidarino2.gif" alt="Description"  width="600" height = "1000" />
-
-But the space was still too little to fit everything comfortably without fear of disconnects, for example we had to fit the breadboard upside down which made the sensors not very reliable. To fix that we created a new version bigger still, so that we could leave the top for the lidar and raspberry only and fit Arduino and all the sensor and motor and their wiring in the bottom base, that made it so that we could control it better.
-
-<img src="./gifs/rplidarino3.gif" alt="Description"   width="600" height = "1000"/>
 
 # Project Structure 
 
@@ -140,8 +103,49 @@ LIDARINO_WORKSPACE
  rosrun lidarino_pkg keyboard_interface
  ```
 
+## HARDWARE
 
- ## Authors
+1. Arduino UNO
+
+2. Raspberry PI
+
+3. DUAL H-BRIDGE L298N
+
+4. 2 TT motors 
+
+5. Ultrasonic sensor HC-SR04
+
+6. Breadboard
+
+7. Power Bank for the Raspberry and separate battery for the motors (9V+ recommended ) 
+
+## VERSIONS
+
+<img src="./images/v01.png" alt="Description" width="600" height = "400" />
+
+<img src="./images/v02_1.png" alt="Description" width="600" height = "400" />
+
+[example](https://www.tinkercad.com/things/dUmpkYZLHeb-chassisupv02)
+
+To design the base for our robot we started from a community shared base (https://www.tinkercad.com/things/daN7nNs5RfJ-line-follower-robot-v3) but modified it a lot to add wheel encoders, ultrasonic sensor, raspberry and a more secure mounting system for the motors and for the 2 bases. We also made it a bit bigger to fit all the new equipment.
+
+
+<img src="./images/lidarinov01.jpeg" alt="Description" width="600" height = "1000"  />
+
+From there we started to write the firmware on Arduino to read data from all the sensors and to control the motors, and we programmed it to be able to turn on it's axis
+
+<img src="./gifs/rplidarino1.gif" alt="Description"    width="600" height = "1000"/>
+
+and go "straight"
+
+<img src="./gifs/rplidarino2.gif" alt="Description"  width="600" height = "1000" />
+
+But the space was still too little to fit everything comfortably without fear of disconnects, for example we had to fit the breadboard upside down which made the sensors not very reliable. To fix that we created a new version bigger still, so that we could leave the top for the lidar and raspberry only and fit Arduino and all the sensor and motor and their wiring in the bottom base, that made it so that we could control it better.
+
+<img src="./gifs/rplidarino3.gif" alt="Description"   width="600" height = "1000"/>
+
+
+## Authors
 Massimo Romano (2043836) (https://github.com/cybernetic-m) 
 
 Paolo Renzi (1887793) (https://github.com/RenziPaolo)
