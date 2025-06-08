@@ -86,10 +86,9 @@ cd ~/catkin_ws/
 git clone "https://github.com/ros-drivers/rosserial"
 catkin_make
 ```
-9. Build our package
+9. Build our package:
  ```sh 
-cd Lidarino_robot
-cd LIDARINO_WORKSPACE
+cd LIDARino_robot/LIDARINO_WORKSPACE
 catkin_make
  ```
 10. Launch the Arduino IDE and open the "firmware.ino"
