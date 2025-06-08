@@ -3,8 +3,6 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./images/lidarino_v02.jpeg" alt="Description" width="500" height = "800" />
 
-<img src="./images/authors.png" alt="Description" width="600" height = "300" />
-
 <img src="./gifs/RP3v3.gif" alt="Description"  width="600" height = "1000" />
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="800" height = "400" />
@@ -155,3 +153,6 @@ Massimo Romano (2043836) (https://github.com/cybernetic-m)
 Paolo Renzi (1887793) (https://github.com/RenziPaolo)
 
 Francesco Giarrusso (1807094) (https://github.com/fragiarrusso)
+
+<img src="./images/authors.png" alt="Description" width="600" height = "300" />
+
