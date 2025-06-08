@@ -6,7 +6,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./gifs/RP3v3.gif" alt="Description"  width="600" height = "1000" />
 
-<img src="./gifs/simcropped33.gif" alt="Description"  width="800" height = "600" />
+<img src="./gifs/simcropped33.gif" alt="Description"  width="700" height = "600" />
 
 
 ## HARDWARE
