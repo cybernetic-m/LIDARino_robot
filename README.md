@@ -3,7 +3,7 @@ This is the official repository of the Robot Programming subject in Artificial I
 
 <img src="./images/lidarino_v02.jpeg" alt="Description" width="500" height = "800" />
 
-<img src="./gifs/local_ex.gif" alt="Description"  width="600" height = "1000" />
+<img src="./gifs/local_ex.gif" alt="Description"  width="500" height = "1000" />
 
 <img src="./gifs/simcropped33.gif" alt="Description"  width="800" height = "400" />
 
