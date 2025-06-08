@@ -64,7 +64,9 @@ LIDARINO_WORKSPACE
  ```
 2. Install rosserial on the Arduino IDE and on on ROS
 
-3. open the firmware folder with Arduino IDE and upload it to your Arduino
+3. Launch the Arduino IDE and open the firmware.ino
+
+3.5 Upload the firmware to your Arduino 
 
 4. Install the lidar ros package from the repo and follow the instructions in the doc folder of the repo
  ```sh 
