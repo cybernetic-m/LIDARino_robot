@@ -66,7 +66,7 @@ LIDARINO_WORKSPACE
 1. Clone the repository:  
  ```sh 
  git clone "https://github.com/cybernetic-m/LIDARino_robot"
-
+```
 
 2. Install ROS Noetic on your PC following these [instructions](https://wiki.ros.org/noetic/Installation/Ubuntu)
 
