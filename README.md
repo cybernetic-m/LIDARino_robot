@@ -61,7 +61,7 @@ LIDARINO_WORKSPACE
 1. Clone the repository:  
  ```sh 
  git clone "https://github.com/cybernetic-m/LIDARino_robot"
- ```
+
 
 2. Install ROS Noetic on your PC following these [instructions](https://wiki.ros.org/noetic/Installation/Ubuntu)
 
@@ -81,8 +81,12 @@ cd ~/catkin_ws/
 git clone "https://github.com/ros-drivers/rosserial"
 catkin_make
 ```
-9.
-
+9. Build our package
+ ```sh 
+cd Lidarino_robot
+cd LIDARINO_WORKSPACE
+catkin_make
+ ```
 10. Launch the Arduino IDE and open the "firmware.ino"
 
 11. Upload the firmware to your Arduino 
